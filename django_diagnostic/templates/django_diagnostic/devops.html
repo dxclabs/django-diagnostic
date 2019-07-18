@@ -1,0 +1,73 @@
+{% extends 'django_diagnostic/one_column_fluid.html' %}
+
+{% block title %}{{ title }}{% endblock title %}
+
+{% block content %}
+<h2>{{ title }}</h2>
+
+{% include "django_diagnostic/git.html" %}
+
+<h4>Tests</h4>
+<table class='table table-condensed'>
+    <tr>
+        <th>Test</th>
+        <th>Run</th>
+        <th>Result</th>
+    </tr>
+    <tr>
+        <td>SMS</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Email</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Malware Scan</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>R/W S3</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Advanced Export</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Import</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>R/W Database</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Memcache Test</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Redis Test</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Modal Popup</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Instrumentation Test: Sentry</td>
+        <td></td>
+        <td></td>
+    </tr>
+</table>
+{% endblock content %}

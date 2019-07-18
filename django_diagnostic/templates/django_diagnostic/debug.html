@@ -1,0 +1,13 @@
+{% extends 'django_diagnostic/one_column_fluid.html' %}
+
+{% block title %}{{ title }}{% endblock title %}
+
+{% block content %}
+<h2>{{ title }}</h2>
+
+{% include "django_diagnostic/git.html" %}
+
+<h4>Debug</h4>
+<pre> {% filter force_escape %} {% debug %} {% endfilter %} </pre>
+
+{% endblock content %}

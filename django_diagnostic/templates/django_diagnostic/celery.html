@@ -1,0 +1,90 @@
+{% extends 'django_diagnostic/one_column_fluid.html' %}
+
+{% block title %}{{ title }}{% endblock title %}
+
+{% block content %}
+<h2>{{ title }}</h2>
+
+{#    <table class="table table-condensed">#}
+{#    {% for k,v in report.items %}#}
+{#        <tr>#}
+{#            <th>{{ k }}</th>#}
+{#            <td>#}
+{#                <table class="table">#}
+{#                {% for k1,v1 in v.items %}#}
+{#                    <tr>#}
+{#                        <td>{{ k1 }}</td>#}
+{#                        <td>{{ v1|linebreaks }}</td>#}
+{#                        <td>#}
+{#                            <table class="table">#}
+{#                            {% for k2,v2 in v1.items %}#}
+{#                                <tr>#}
+{#                                    <td>{{ k2 }}</td>#}
+{#                                    <td>{{ v2 }}</td>#}
+{#                                </tr>#}
+{#                            {% endfor %}#}
+{#                            </table>#}
+{#                        </td>#}
+{#                    </tr>#}
+{#                {% endfor %}#}
+{#                </table>#}
+{#            </td>#}
+{#        </tr>#}
+{#    {% endfor %}#}
+{#    </table>#}
+
+
+    <h3>Celery Diagnostic</h3>
+    <h3> ACTIVE </h3>
+    <table class="table table-condensed">
+    {% for k,v in active.items %}
+        <tr>
+            <td>{{ k }}</td>
+        </tr>
+        <tr>
+            <td><strong>Active Tasks:</strong><br/>
+                {% for k1 in v %}
+                    {{ k1 }}<br/><br/>
+                {% endfor %}
+            </td>
+        </tr>
+        <tr>
+            <td><strong>Total Active:</strong> {{ v|length }}</td>
+        </tr>
+
+    {% endfor %}
+    </table>
+
+    <h3> SCHEDULED </h3>
+    {{ scheduled }}
+
+    <h3> STATS </h3>
+    <table class="table table-condensed">
+    {% for k,v in stats.items %}
+        <tr>
+            <th>{{ k }}</th>
+            <td>
+                <table class="table">
+                {% for k1,v1 in v.items %}
+                    <tr>
+                        <td>{{ k1 }}</td>
+                        <td>
+                            <table class="table">
+                            {% for k2,v2 in v1.items %}
+                                <tr>
+                                    <td>{{ k2 }}</td>
+                                    <td>{{ v2 }}</td>
+                                </tr>
+                            {% endfor %}
+                            </table>
+                        </td>
+
+                    </tr>
+                {% endfor %}
+                </table>
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
+
+{% endblock content %}

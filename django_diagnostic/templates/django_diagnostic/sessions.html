@@ -1,0 +1,30 @@
+{% extends 'django_diagnostic/one_column_fluid.html' %}
+
+{% block title %}{{ title }}{% endblock title %}
+
+{% block content %}
+<h2>{{ title }}</h2>
+
+<h4>Sessions</h4>
+<table class="table">
+  <tr>
+    <th>Session Key</th>
+    <th>User ID</th>
+    <th>Username</th>
+    <th>Full Name</th>
+    <th>Auth Backend</th>
+    <th>Expire Date</th>
+  </tr>
+  {% for session, values in decoded_sessions.items %}
+  <tr>
+    <td>{{values.session_key}}</td>
+    <td>{{values.auth_user_id}}</td>
+    <td>{{values.username}}</td>
+    <td>{{values.full_name}}</td>
+    <td>{{values.auth_user_backend}}</td>
+    <th>{{values.expire_date}}</th>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock content %}

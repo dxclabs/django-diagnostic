@@ -1,0 +1,21 @@
+{% extends 'django_diagnostic/one_column_fluid.html' %}
+
+{% block title %}{{ title }}{% endblock title %}
+
+{% block content %}
+<h2>{{ title }}</h2>
+
+{% include "django_diagnostic/git.html" %}
+
+<h4>OS Environment</h4>
+<table class="table">
+    {% for key,value in environ.items|dictsort:"0.lower" %}
+    <tr>
+        <td>{{ key }}</td>
+        <td>{{ value }}</td>
+        <td></td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock content %}

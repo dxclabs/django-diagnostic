@@ -1,0 +1,2 @@
+bump2version==0.5.10
+wheel==0.30.0

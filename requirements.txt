@@ -1,0 +1,6 @@
+
+# Additional requirements go here
+
+django>=2.2
+django-braces>=1.13.0
+gitpython>=2.1.11

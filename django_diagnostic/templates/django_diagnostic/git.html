@@ -1,0 +1,48 @@
+<h4>Running Code</h4>
+<table class="table">
+    <tr>
+        <td>git describe</td>
+        <th>{{ git_describe }}</th>
+        <td></td>
+    <tr>
+    </tr>
+    <td>git detached head</td>
+    <th>{{ git_detached_head|yesno:"yes,no,<unknown>" }}</th>
+    <td></td>
+    </tr>
+    <tr>
+        <td>git active branch name</td>
+        <th>{{ git_active_branch }}</th>
+        <td></td>
+    </tr>
+    <tr>
+        <td>git active branch tracking branch</td>
+        <th>{{ active_branch_tracking_branch }}</th>
+        <td></td>
+    </tr>
+    <tr>
+        <td>git hexsha</td>
+        <th>{{ hexsha }}</th>
+        <td></td>
+    </tr>
+    <tr>
+        <td>hostname</td>
+        <th>{{ hostname }}</th>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Django Version</td>
+        <th>{{ django_version }}</th>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Python Version</td>
+        <th>{{ python_version }}</th>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Database Version</td>
+        <th>{{ db_version }}</th>
+        <td></td>
+    </tr>
+</table>
