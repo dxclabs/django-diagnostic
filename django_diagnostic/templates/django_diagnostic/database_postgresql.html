@@ -1,0 +1,69 @@
+{% extends 'django_diagnostic/one_column_fluid.html' %}
+
+{% block title %}{{ view.page_title }}{% endblock title %}
+
+{% block content %}
+<h2>{{ view.page_heading }}</h2>
+
+<h4>Postgresql</h4>
+
+
+<table class="table">
+  <tr>
+    <td>Database Name</td>
+    <td>{{db_name}}</td>
+  </tr>
+  <tr>
+    <td>Database Version</td>
+    <td>{{db_version}}</td>
+  </tr>
+  <tr>
+    <td>Database DSN</td>
+    <td>{{db_dsn}}</td>
+  </tr>
+  <tr>
+    <td>Database Status</td>
+    <td>{{db_status}}</td>
+  </tr>
+  <tr>
+    <td>Database Size</td>
+    <td>{{db_size}}</td>
+  </tr>
+</table>
+
+<h4>Table Sizes for {{db_name}}</h4>
+<table class="table">
+  <tr>
+    <th>OID</th>
+    <th>Table Schema</th>
+    <th>Table Name</th>
+    <th>Row Estimate</th>
+    <th>Total Bytes</th>
+    <th>Index Bytes</th>
+    <th>Toast Bytes</th>
+    <th>Table Bytes</th>
+    <th>Total</th>
+    <th>Index</th>
+    <th>Toast</th>
+    <th>Table</th>
+  </tr>
+  {% for table in db_table_sizes %}
+  <tr>
+    <td>{{table.0}}</td>
+    <td>{{table.1}}</td>
+    <td>{{table.2}}</td>
+    <td>{{table.3}}</td>
+    <td>{{table.4}}</td>
+    <td>{{table.5}}</td>
+    <td>{{table.6}}</td>
+    <td>{{table.7}}</td>
+    <td>{{table.8}}</td>
+    <td>{{table.9}}</td>
+    <td>{{table.10}}</td>
+    <td>{{table.11}}</td>
+    <td>{{table.12}}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock content %}

@@ -8,7 +8,7 @@ __all__ = [
 
 
 def autodiscover():
-    autodiscover_modules('diagnostic')
+    autodiscover_modules('diagnostic', 'diagnostic_views')
 
 
 default_app_config = 'django_diagnostic.apps.DjangoDiagnosticConfig'

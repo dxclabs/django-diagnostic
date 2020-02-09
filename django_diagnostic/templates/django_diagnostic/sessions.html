@@ -1,9 +1,9 @@
 {% extends 'django_diagnostic/one_column_fluid.html' %}
 
-{% block title %}{{ title }}{% endblock title %}
+{% block title %}{{ view.page_title }}{% endblock title %}
 
 {% block content %}
-<h2>{{ title }}</h2>
+<h2>{{ view.page_heading }}</h2>
 
 <h4>Sessions</h4>
 <table class="table">

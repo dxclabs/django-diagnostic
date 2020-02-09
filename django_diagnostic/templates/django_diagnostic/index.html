@@ -1,22 +1,23 @@
 {% extends 'django_diagnostic/one_column_fluid.html' %}
 {% load i18n %}
 
-{% block title %}{% trans "Diagnostic Pages" %}{% endblock title %}
+{% block title %}{{ view.page_title }}{% endblock title %}
 
 {% block content %}
+<h2>{{ view.page_heading }}</h2>
 
-<h4 class="text-center">{% trans "Diagnostic Page Registry" %}</h4>
+<!--<h4 class="text-center">{% trans "Diagnostic Page Registry" %}</h4>-->
 
 <table class="table table-striped">
   <tr>
-    <th>App</th>
     <th>Name</th>
+    <th>App</th>
     <th>Description</th>
   </tr>
   {% for key, value in registry.items %}
   <tr>
-    <td><a href="{% url 'django_diagnostic:dispatcher' value.app_name value.slug %}">{% trans value.app_name %}</a></td>
     <td><a href="{% url 'django_diagnostic:dispatcher' value.app_name value.slug %}">{% trans value.link_name %}</a></td>
+    <td><a href="{% url 'django_diagnostic:dispatcher' value.app_name value.slug %}">{% trans value.app_name %}</a></td>
     <td>{{value.doc}}</td>
   </tr>
   {% endfor %}
