@@ -134,7 +134,6 @@ class GitCodeRunning(object):
 
         context['django_version'] = django.VERSION
         context['python_version'] = sys.version
-        context['db_version'] = connection.cursor().connection.server_version
 
         try:
             hostname = socket.gethostname()
