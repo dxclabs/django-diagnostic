@@ -22,7 +22,7 @@ def get_version(*file_paths):
 
 
 # version = get_version("django_diagnostic", "__init__.py")
-version = '0.1.0'
+version = '0.2.0'
 
 if sys.argv[-1] == 'publish':
     try:
@@ -74,5 +74,7 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
     ],
 )

@@ -11,13 +11,29 @@ from django.contrib.auth import get_user_model
 from django.contrib.sessions.models import Session
 from django.core.validators import slug_re
 from django.db import connection
+from django.db.models import Count, Max, Case, When, IntegerField, Min
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import TemplateView
-from git import Repo
+
+HAS_GIT = False
+try:
+    from git import Repo
+
+    HAS_GIT = True
+except ImportError:
+    pass
+
+HAS_TASK_RESULT = False
+try:
+    from django_celery_results.models import TaskResult
+
+    HAS_TASK_RESULT = True
+except ImportError:
+    pass
 
 from django_diagnostic.decorators import Diagnostic
 
@@ -25,6 +41,9 @@ module_logger = logging.getLogger(__name__)
 
 
 class IndexView(SuperuserRequiredMixin, TemplateView):
+    page_title = _("Diagnostic Page Registry")
+    page_heading = _("Diagnostic Page Registry")
+
     def get_template_names(self):
         return 'django_diagnostic/index.html'
 
@@ -61,7 +80,7 @@ class IndexView(SuperuserRequiredMixin, TemplateView):
                     if registry_key not in registry_dict:
                         registry_dict[registry_key] = entry
 
-            except:
+            except Exception:
                 pass
 
         context['registry'] = registry_dict
@@ -115,7 +134,6 @@ class GitCodeRunning(object):
 
         context['django_version'] = django.VERSION
         context['python_version'] = sys.version
-        context['db_version'] = connection.cursor().connection.server_version
 
         try:
             hostname = socket.gethostname()
@@ -126,21 +144,122 @@ class GitCodeRunning(object):
         return context
 
 
+# @Diagnostic.register(link_name='Celery', slug='celery')
+class CeleryView(SuperuserRequiredMixin, TemplateView):
+    """
+    Celery system settings and controls
+    """
+
+    page_title = _('Celery Diagnostic')
+    page_heading = _('Celery Diagnostic')
+
+    def get_template_names(self):
+        return 'django_diagnostic/celery.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        return context
+
+
+@Diagnostic.register(link_name='Celery Results Summary', slug='celery-results-summary')
+class CeleryResultsSummary(SuperuserRequiredMixin, TemplateView):
+    """
+    Summary of celery results from TaskResults table
+    """
+
+    page_title = _('Celery Results Summary')
+    page_heading = _('Celery Results Summary')
+
+    def get_template_names(self):
+        return 'django_diagnostic/celery_results_summary.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if settings.CELERY_RESULT_BACKEND == 'django-db':
+            tasks = TaskResult.objects.values('task_name') \
+                .annotate(total=Count('id')) \
+                .annotate(earliest=Max('date_done')) \
+                .annotate(latest=Min('date_done')) \
+                .annotate(successes=Count(Case(When(status='SUCCESS', then=1), output_field=IntegerField(), ))) \
+                .annotate(failures=Count(Case(When(status='FAILURE', then=1), output_field=IntegerField(), ))) \
+                .order_by('task_name')
+
+            context['tasks'] = tasks
+
+        return context
+
+
+@Diagnostic.register(link_name='Database PostgreSQL', slug='database-postgresql')
+class DatabasePostgreSQLView(SuperuserRequiredMixin, TemplateView):
+    """
+    Basic information about postgresql database
+    """
+
+    page_title = _('PostgreSQL Diagnostic')
+    page_heading = _('PostgreSQL Diagnostic')
+
+    def get_template_names(self):
+        return 'django_diagnostic/database_postgresql.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        try:
+            db_name = settings.DATABASES['default']['NAME']
+            context['db_name'] = db_name
+
+            context['db_version'] = connection.cursor().connection.server_version
+            context['db_status'] = connection.cursor().connection.status
+            context['db_dsn'] = connection.cursor().connection.dsn
+
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT pg_size_pretty( pg_database_size(%s));", [db_name])
+                db_size_row = cursor.fetchone()
+                context['db_size'] = db_size_row[0]
+
+                table_size_sql = f"SELECT *, pg_size_pretty(total_bytes) AS total, " \
+                                 f"pg_size_pretty(index_bytes) AS INDEX, " \
+                                 f"pg_size_pretty(toast_bytes) AS toast, " \
+                                 f"pg_size_pretty(table_bytes) AS TABLE " \
+                                 f"FROM (" \
+                                 f"  SELECT *, total_bytes-index_bytes-COALESCE(toast_bytes,0) AS table_bytes" \
+                                 f"  FROM (" \
+                                 f"    SELECT c.oid,nspname AS table_schema," \
+                                 f"           relname AS TABLE_NAME, " \
+                                 f"           c.reltuples AS row_estimate, " \
+                                 f"           pg_total_relation_size(c.oid) AS total_bytes," \
+                                 f"           pg_indexes_size(c.oid) AS index_bytes," \
+                                 f"           pg_total_relation_size(reltoastrelid) AS toast_bytes" \
+                                 f"    FROM pg_class c LEFT JOIN pg_namespace n ON n.oid = c.relnamespace" \
+                                 f"    WHERE relkind = 'r'" \
+                                 f"  ) a" \
+                                 f") a;"
+                cursor.execute(table_size_sql)
+                db_table_sizes = cursor.fetchall()
+                context['db_table_sizes'] = db_table_sizes
+
+        except Exception:
+            pass
+
+        return context
+
+
 @Diagnostic.register(link_name='Debug', slug='debug')
 class DebugView(SuperuserRequiredMixin, GitCodeRunning, TemplateView):
     """
     Generates a debug message using django debug traceback
     """
 
+    page_title = _('Debug Diagnostic')
+    page_heading = _('Debug Diagnostic')
+
     def get_template_names(self):
         return 'django_diagnostic/debug.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        context['title'] = _('Debug Diagnostic')
-
-        return context
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #
+    #     return context
 
 
 @Diagnostic.register(link_name='Demo', slug='demo')
@@ -149,6 +268,9 @@ class DemoView(SuperuserRequiredMixin, TemplateView):
     Demo system settings and controls
     """
 
+    page_title = _('Demo Diagnostic')
+    page_heading = _('Demo Diagnostic')
+
     def get_template_names(self):
         return 'django_diagnostic/demo.html'
 
@@ -156,24 +278,7 @@ class DemoView(SuperuserRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
 
         context['demo'] = settings.DEMO
-        context['title'] = _('Demo Diagnostic')
-
-        return context
-
-
-# @Diagnostic.register(link_name='Celery', slug='celery')
-class CeleryView(SuperuserRequiredMixin, TemplateView):
-    """
-    Celery system settings and controls
-    """
-
-    def get_template_names(self):
-        return 'django_diagnostic/celery.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        context['title'] = _('Celery Diagnostic')
+        # context['title'] = _('Demo Diagnostic')
 
         return context
 
@@ -184,6 +289,9 @@ class DevopsView(SuperuserRequiredMixin, GitCodeRunning, TemplateView):
     Integration tests externally provided services and common functionality
     """
 
+    page_title = _('DevOps Diagnostic')
+    page_heading = _('DevOps Diagnostic')
+
     def get_template_names(self):
         return 'django_diagnostic/devops.html'
 
@@ -191,7 +299,6 @@ class DevopsView(SuperuserRequiredMixin, GitCodeRunning, TemplateView):
         context = super().get_context_data(**kwargs)
 
         context['environ'] = os.environ
-        context['title'] = _('DevOps Diagnostic')
 
         return context
 
@@ -202,6 +309,9 @@ class EnvironmentView(SuperuserRequiredMixin, GitCodeRunning, TemplateView):
     Show the OS environment
     """
 
+    page_title = _('Environment Diagnostic')
+    page_heading = _('Environment Diagnostic')
+
     def get_template_names(self):
         return 'django_diagnostic/environment.html'
 
@@ -209,7 +319,6 @@ class EnvironmentView(SuperuserRequiredMixin, GitCodeRunning, TemplateView):
         context = super().get_context_data(**kwargs)
 
         context['environ'] = os.environ
-        context['title'] = _('Environment Diagnostic')
 
         return context
 
@@ -220,6 +329,9 @@ class SettingsView(SuperuserRequiredMixin, GitCodeRunning, TemplateView):
     Django settings
     """
 
+    page_title = _('Settings Diagnostic')
+    page_heading = _('Settings Diagnostic')
+
     def get_template_names(self):
         return 'django_diagnostic/settings.html'
 
@@ -227,7 +339,7 @@ class SettingsView(SuperuserRequiredMixin, GitCodeRunning, TemplateView):
         context = super().get_context_data(**kwargs)
 
         context['settings'] = settings.__dict__['_wrapped'].__dict__
-        context['title'] = _('Settings Diagnostic')
+        # context['title'] = _('Settings Diagnostic')
 
         return context
 
@@ -237,6 +349,9 @@ class SessionsView(SuperuserRequiredMixin, TemplateView):
     """
     Current Sessions and Users
     """
+
+    page_title = _('Sessions Diagnostic')
+    page_heading = _('Sessions Diagnostic')
 
     def get_template_names(self):
         return 'django_diagnostic/sessions.html'
@@ -274,7 +389,5 @@ class SessionsView(SuperuserRequiredMixin, TemplateView):
         # Query all logged in users based on id list
         UserModel = get_user_model()
         context['users'] = UserModel.objects.filter(id__in=uid_list)
-
-        context['title'] = _('Sessions Diagnostic')
 
         return context
