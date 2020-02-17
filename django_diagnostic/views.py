@@ -179,13 +179,23 @@ class CeleryResultsSummary(SuperuserRequiredMixin, TemplateView):
         if settings.CELERY_RESULT_BACKEND == 'django-db':
             tasks = TaskResult.objects.values('task_name') \
                 .annotate(total=Count('id')) \
-                .annotate(earliest=Max('date_done')) \
-                .annotate(latest=Min('date_done')) \
+                .annotate(earliest=Min('date_done')) \
+                .annotate(latest=Max('date_done')) \
                 .annotate(successes=Count(Case(When(status='SUCCESS', then=1), output_field=IntegerField(), ))) \
                 .annotate(failures=Count(Case(When(status='FAILURE', then=1), output_field=IntegerField(), ))) \
                 .order_by('task_name')
 
             context['tasks'] = tasks
+
+            totals = TaskResult.objects \
+                .aggregate(total=Count('id'),
+                           earliest=Min('date_done'),
+                           latest=Max('date_done'),
+                           successes=Count(Case(When(status='SUCCESS', then=1), output_field=IntegerField(),)),
+                           failures=Count(Case(When(status='FAILURE', then=1), output_field=IntegerField(), ))
+                           )
+
+            context['totals'] = totals
 
         return context
 
