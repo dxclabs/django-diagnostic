@@ -1,4 +1,5 @@
 import importlib
+import json
 import logging
 import os
 import socket
@@ -179,13 +180,23 @@ class CeleryResultsSummary(SuperuserRequiredMixin, TemplateView):
         if settings.CELERY_RESULT_BACKEND == 'django-db':
             tasks = TaskResult.objects.values('task_name') \
                 .annotate(total=Count('id')) \
-                .annotate(earliest=Max('date_done')) \
-                .annotate(latest=Min('date_done')) \
+                .annotate(earliest=Min('date_done')) \
+                .annotate(latest=Max('date_done')) \
                 .annotate(successes=Count(Case(When(status='SUCCESS', then=1), output_field=IntegerField(), ))) \
                 .annotate(failures=Count(Case(When(status='FAILURE', then=1), output_field=IntegerField(), ))) \
                 .order_by('task_name')
 
             context['tasks'] = tasks
+
+            totals = TaskResult.objects \
+                .aggregate(total=Count('id'),
+                           earliest=Min('date_done'),
+                           latest=Max('date_done'),
+                           successes=Count(Case(When(status='SUCCESS', then=1), output_field=IntegerField(), )),
+                           failures=Count(Case(When(status='FAILURE', then=1), output_field=IntegerField(), ))
+                           )
+
+            context['totals'] = totals
 
         return context
 
@@ -319,6 +330,34 @@ class EnvironmentView(SuperuserRequiredMixin, GitCodeRunning, TemplateView):
         context = super().get_context_data(**kwargs)
 
         context['environ'] = os.environ
+
+        return context
+
+
+@Diagnostic.register(link_name='Static Manifest', slug='manifest')
+class ManifestView(SuperuserRequiredMixin, TemplateView):
+    """
+    Show the Whitenoise Static Manifest
+    """
+
+    page_title = _('Whitenoise Static Manifest Diagnostic')
+    page_heading = _('Whitenoise Static Manifest  Diagnostic')
+
+    def get_template_names(self):
+        return 'django_diagnostic/manifest.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        try:
+            with open(f'{settings.STATIC_ROOT}/staticfiles.json', 'r') as f:
+                manifest_json_object = json.load(f)
+            context['manifest'] = manifest_json_object
+        except FileNotFoundError:
+            context['manifest'] = _(f'Unable to load Staticfiles Manifest. '
+                                    f'Perhaps whitenoise/manifest not in use. '
+                                    f'Or maybe this is runserver.'
+                                    f'Or maybe you need to run collectstatic')
 
         return context
 

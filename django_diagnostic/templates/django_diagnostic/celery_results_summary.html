@@ -27,6 +27,17 @@
     <th>{{task.total}}</th>
   </tr>
   {% endfor %}
+
+  {# totals row #}
+  <tr>
+    <td><b>Totals</b></td>
+    <td></td>
+    <td>{{totals.earliest}}</td>
+    <td>{{totals.latest}}</td>
+    <td>{{totals.successes}}</td>
+    <th>{{totals.failures}}</th>
+    <th>{{totals.total}}</th>
+  </tr>
 </table>
 
 {% endblock content %}
