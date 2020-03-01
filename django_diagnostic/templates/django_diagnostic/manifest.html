@@ -4,8 +4,27 @@
 
 {% block content %}
 <h2>{{ view.page_heading }}</h2>
+<h4>Static Files Settings</h4>
+<p>Staticfiles Dirs: {{staticfiles_dirs}}</p>
+<p>Staticfiles Finders: {{staticfiles_finders}}</p>
+<p>Staticfiles Storage: {{staticfiles_storage}}</p>
+<p>Static Root: {{static_root}}</p>
+<p>Static URL: {{static_url}}</p>
 
+{% if manifest %}
 <h4>Static Manifest</h4>
-<pre> {% filter force_escape %} {{manifest}} {% endfilter %} </pre>
-
+<pre> {% filter pprint %} {{manifest}} {% endfilter %} </pre>
+{% else %}
+<h4>Static Manifest Errors</h4>
+<p>Unable to load staticfiles manifest.</p>
+<p>Tried to find manifest here: <code>{{staticfiles}}</code></p>
+<p>Possible issues:</p>
+<ul>
+  <li>Perhaps whitenoise/manifest not in use.</li>
+  <li>Check STATICFILES_STORAGE is set manifest. Currently: <code>{{staticfiles_storage}}</code></li>
+  <li>Maybe you are using <code>INSTALLED_APPS += ('whitenoise.runserver_nostatic',)</code></li>
+  <li>Or maybe this is runserver</li>
+  <li>Or maybe you need to run collectstatic <code>python manage.py collectstatic</code></li>
+</ul>
+{% endif %}
 {% endblock content %}

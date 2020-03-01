@@ -349,15 +349,22 @@ class ManifestView(SuperuserRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        if settings.STATIC_ROOT:
+            staticfiles = f'{settings.STATIC_ROOT}/staticfiles.json'
+        else:
+            staticfiles = ''
+        context['staticfiles'] = staticfiles
+
+        for key in dir(settings):
+            if 'static' in key.casefold():
+                context[key.casefold()] = getattr(settings, key)
+
         try:
-            with open(f'{settings.STATIC_ROOT}/staticfiles.json', 'r') as f:
+            with open(staticfiles, 'r') as f:
                 manifest_json_object = json.load(f)
             context['manifest'] = manifest_json_object
-        except FileNotFoundError:
-            context['manifest'] = _(f'Unable to load Staticfiles Manifest. '
-                                    f'Perhaps whitenoise/manifest not in use. '
-                                    f'Or maybe this is runserver.'
-                                    f'Or maybe you need to run collectstatic')
+        except FileNotFoundError as e:
+            context['error'] = str(e)
 
         return context
 
