@@ -12,7 +12,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.sessions.models import Session
 from django.core.validators import slug_re
 from django.db import connection
-from django.db.models import Count, Max, Case, When, IntegerField, Min
+from django.db.models import Case, Count, IntegerField, Max, Min, When
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils import timezone
