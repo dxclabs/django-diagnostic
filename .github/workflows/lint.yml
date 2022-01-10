@@ -8,16 +8,17 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
-      - run: pip install bandit black codespell flake8 isort mypy pytest pyupgrade vulture # tox
-      - run: bandit -x "migrations,squashed_migrations" -r apps/ || true
+      # - run: pip install bandit black codespell flake8 isort mypy pytest pyupgrade vulture # tox
+      - run: pip install -r requirements\requirements-test.txt
+      - run: bandit -x "migrations,squashed_migrations" -r django_diagnostic/ || true
       - run: vulture || true
-      - run: black --check apps/ || true
+      - run: black --check django_diagnostic/ || true
       - run: codespell --quiet-level=2 || true  # --ignore-words-list="" --skip=""
-      - run: flake8 apps/
-      - run: isort --check-only apps/ || true
+      - run: flake8 django_diagnostic/
+      - run: isort --check-only django_diagnostic/ || true
       # - run: tox
       - run: pip install -r requirements/requirements.txt || true
-      - run: mypy apps/
-      - run: pytest apps/ || true
-      - run: pytest --doctest-modules apps/ || true
+      - run: mypy django_diagnostic/
+      - run: pytest django_diagnostic/ || true
+      - run: pytest --doctest-modules django_diagnostic/ || true
       - run: shopt -s globstar && pyupgrade --py39-plus **/*.py || true
