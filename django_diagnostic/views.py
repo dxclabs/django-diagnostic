@@ -20,6 +20,7 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import TemplateView
 
 from braces.views import SuperuserRequiredMixin
+from django_diagnostic.decorators import Diagnostic
 
 HAS_GIT = False
 try:
@@ -33,11 +34,10 @@ HAS_TASK_RESULT = False
 try:
     from django_celery_results.models import TaskResult
 
-    HAS_TASK_RESULT = True
 except ImportError:
+    HAS_TASK_RESULT = True
     pass
 
-from django_diagnostic.decorators import Diagnostic
 
 module_logger = logging.getLogger(__name__)
 
