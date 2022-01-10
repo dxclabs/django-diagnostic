@@ -38,6 +38,7 @@ htmlcov
 
 # Pycharm/Intellij
 .idea
+.vscode
 
 # Complexity
 output/*.html
@@ -47,4 +48,4 @@ output/*/index.html
 docs/_build
 /newrelic-python-agent.log
 /venv/
-/venv/
+.venv
