@@ -1,0 +1,12 @@
+bandit
+black
+codecov
+codespell
+coverage
+flake8
+isort[requirements_deprecated_finder]
+mock
+mypy
+pyupgrade
+tox
+vulture
