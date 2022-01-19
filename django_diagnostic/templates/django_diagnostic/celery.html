@@ -5,18 +5,18 @@
 {% block content %}
 <h2>{{ view.title }}</h2>
 
-{#    <table class="table table-condensed">#}
+{#    <table class="table table-condensed table-striped">#}
 {#    {% for k,v in report.items %}#}
 {#        <tr>#}
 {#            <th>{{ k }}</th>#}
 {#            <td>#}
-{#                <table class="table">#}
+{#                <table class="table table-condensed table-striped">#}
 {#                {% for k1,v1 in v.items %}#}
 {#                    <tr>#}
 {#                        <td>{{ k1 }}</td>#}
 {#                        <td>{{ v1|linebreaks }}</td>#}
 {#                        <td>#}
-{#                            <table class="table">#}
+{#                            <table class="table table-condensed table-striped">#}
 {#                            {% for k2,v2 in v1.items %}#}
 {#                                <tr>#}
 {#                                    <td>{{ k2 }}</td>#}
@@ -36,7 +36,7 @@
 
     <h3>Celery Diagnostic</h3>
     <h3> ACTIVE </h3>
-    <table class="table table-condensed">
+    <table class="table table-condensed table-striped">
     {% for k,v in active.items %}
         <tr>
             <td>{{ k }}</td>
@@ -59,17 +59,17 @@
     {{ scheduled }}
 
     <h3> STATS </h3>
-    <table class="table table-condensed">
+    <table class="table table-condensed table-striped">
     {% for k,v in stats.items %}
         <tr>
             <th>{{ k }}</th>
             <td>
-                <table class="table">
+                <table class="table table-condensed table-striped">
                 {% for k1,v1 in v.items %}
                     <tr>
                         <td>{{ k1 }}</td>
                         <td>
-                            <table class="table">
+                            <table class="table table-condensed table-striped">
                             {% for k2,v2 in v1.items %}
                                 <tr>
                                     <td>{{ k2 }}</td>

@@ -7,7 +7,9 @@
 
 {% include "django_diagnostic/git.html" %}
 
-<h4>Debug</h4>
+<br>
+<h3>Debug</h3>
+
 <pre> {% filter force_escape %} {% debug %} {% endfilter %} </pre>
 
 {% endblock content %}

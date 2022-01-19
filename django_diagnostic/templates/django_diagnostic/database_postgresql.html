@@ -5,10 +5,10 @@
 {% block content %}
 <h2>{{ view.page_heading }}</h2>
 
-<h4>Postgresql</h4>
+<br>
+<h3>Postgresql</h3>
 
-
-<table class="table">
+<table class="table table-condensed table-striped">
   <tr>
     <td>Database Name</td>
     <td>{{db_name}}</td>
@@ -31,8 +31,9 @@
   </tr>
 </table>
 
-<h4>Table Sizes for {{db_name}}</h4>
-<table class="table">
+<br>
+<h3>Table Sizes for {{db_name}}</h3>
+<table class="table table-condensed table-striped">
   <tr>
     <th>OID</th>
     <th>Table Schema</th>
@@ -62,6 +63,10 @@
     <td>{{table.10}}</td>
     <td>{{table.11}}</td>
     <td>{{table.12}}</td>
+  </tr>
+  {% empty %}
+  <tr>
+      <td>{% trans 'No table data' %}</td>
   </tr>
   {% endfor %}
 </table>
