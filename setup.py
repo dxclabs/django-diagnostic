@@ -47,11 +47,11 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 setup(
     name='django-diagnostic',
     version=version,
-    description="""provides basic diagnostic pages for django application""",
+    description="""provides diagnostic pages for django application""",
     long_description=readme + '\n\n' + history,
     author='Campbell McKilligan',
     author_email='campbell@dxclabs.com',
-    url='https://github.com/campbellmc/django-diagnostic',
+    url='https://github.com/dxclabs/django-diagnostic',
     packages=[
         'django_diagnostic',
     ],
@@ -65,6 +65,7 @@ setup(
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Framework :: Django :: 3.0',
+        'Framework :: Django :: 3.1',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
