@@ -20,6 +20,7 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import TemplateView
 
 from braces.views import SuperuserRequiredMixin
+
 from django_diagnostic.decorators import Diagnostic
 
 HAS_GIT = False
@@ -52,8 +53,7 @@ class IndexView(SuperuserRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         registry_dict = dict()
-        # for key, value in sorted(Diagnostic.registry.items(),
-        #                          key=lambda item: item[1].get('kwargs', dict()).get('app_name', '')):
+
         for key, value in sorted(Diagnostic.registry.items()):
             try:
                 entry = dict()
@@ -297,11 +297,6 @@ class DebugView(SuperuserRequiredMixin, GitCodeRunning, TemplateView):
     def get_template_names(self):
         return "django_diagnostic/debug.html"
 
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #
-    #     return context
-
 
 @Diagnostic.register(link_name="Demo", slug="demo")
 class DemoView(SuperuserRequiredMixin, TemplateView):
@@ -319,7 +314,6 @@ class DemoView(SuperuserRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
 
         context["demo"] = settings.DEMO
-        # context['title'] = _('Demo Diagnostic')
 
         return context
 
@@ -359,8 +353,7 @@ class EnvironmentView(SuperuserRequiredMixin, GitCodeRunning, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        context["environ"] = os.environ
-
+        context["environ"] = dict(os.environ)
         return context
 
 
@@ -371,7 +364,7 @@ class ManifestView(SuperuserRequiredMixin, TemplateView):
     """
 
     page_title = _("Whitenoise Static Manifest Diagnostic")
-    page_heading = _("Whitenoise Static Manifest  Diagnostic")
+    page_heading = _("Whitenoise Static Manifest Diagnostic")
 
     def get_template_names(self):
         return "django_diagnostic/manifest.html"
@@ -415,7 +408,6 @@ class SettingsView(SuperuserRequiredMixin, GitCodeRunning, TemplateView):
         context = super().get_context_data(**kwargs)
 
         context["settings"] = settings.__dict__["_wrapped"].__dict__
-        # context['title'] = _('Settings Diagnostic')
 
         return context
 
