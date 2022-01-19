@@ -5,8 +5,10 @@
 {% block content %}
 <h2>{{ view.page_heading }}</h2>
 
-<h4>Task Results for Period</h4>
-<table class="table">
+<br>
+<h3>Task Results for Period</h3>
+
+<table class="table table-condensed table-striped">
   <tr>
     <th>Task Name</th>
     <th>Enabled</th>
@@ -25,6 +27,10 @@
     <td>{{task.successes}}</td>
     <th>{{task.failures}}</th>
     <th>{{task.total}}</th>
+  </tr>
+  {% empty %}
+  <tr>
+      <td>{% trans 'No data' %}</td>
   </tr>
   {% endfor %}
 

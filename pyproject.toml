@@ -1,0 +1,30 @@
+[tool.black]
+line-length = 120
+target-version = ['py37', 'py38', 'py39', 'py310']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  | migrations
+  | squashed_migrations
+)/
+'''
+
+[tool.isort]
+atomic = "True"
+known_first_party = "django_diagnostic"
+known_django = "django"
+line_length = 120
+profile = "black"
+remove_redundant_aliases = "True"
+sections = "FUTURE,STDLIB,DJANGO,THIRDPARTY,FIRSTPARTY,LOCALFOLDER"
+skip = "migrations,squashed_migrations"
+src_paths = ["django_diagnostic"]
+
+[tool.vulture]
+exclude = ["migrations/", "squashed_migrations/"]
+ignore_decorators = ["@task",]
+make_whitelist = true
+min_confidence = 80
+paths = ["django_diagnostic/",]
+sort_by_size = true
+verbose = false

@@ -4,7 +4,9 @@
 
 {% block content %}
 <h2>{{ view.page_heading }}</h2>
-<h4>Static Files Settings</h4>
+
+<br>
+<h3>Static Files Settings</h3>
 <p>Staticfiles Dirs: {{staticfiles_dirs}}</p>
 <p>Staticfiles Finders: {{staticfiles_finders}}</p>
 <p>Staticfiles Storage: {{staticfiles_storage}}</p>
@@ -12,10 +14,15 @@
 <p>Static URL: {{static_url}}</p>
 
 {% if manifest %}
-<h4>Static Manifest</h4>
+<br>
+<h3>Static Manifest</h3>
+
 <pre> {% filter pprint %} {{manifest}} {% endfilter %} </pre>
+
 {% else %}
-<h4>Static Manifest Errors</h4>
+<br>
+<h3>Static Manifest Errors</h3>
+
 <p>Unable to load staticfiles manifest.</p>
 <p>Tried to find manifest here: <code>{{staticfiles}}</code></p>
 <p>Possible issues:</p>

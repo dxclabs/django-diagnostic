@@ -7,13 +7,19 @@
 
 {% include "django_diagnostic/git.html" %}
 
-<h4>OS Environment</h4>
-<table class="table">
-    {% for key,value in environ.items|dictsort:"0.lower" %}
+<br>
+<h3>OS Environment</h3>
+
+<table class="table table-condensed table-striped">
+    {% for key,value in environ.items|dictsort:0 %}
     <tr>
         <td>{{ key }}</td>
         <td>{{ value }}</td>
         <td></td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td>{% trans 'No environ data' %}</td>
     </tr>
     {% endfor %}
 </table>

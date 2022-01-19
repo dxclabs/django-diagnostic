@@ -22,7 +22,7 @@ def get_version(*file_paths):
 
 
 # version = get_version("django_diagnostic", "__init__.py")
-version = '0.4.0'
+version = '0.5.0'
 
 if sys.argv[-1] == 'publish':
     try:
@@ -47,11 +47,11 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 setup(
     name='django-diagnostic',
     version=version,
-    description="""provides basic diagnostic pages for django application""",
+    description="""provides diagnostic pages for django application""",
     long_description=readme + '\n\n' + history,
     author='Campbell McKilligan',
     author_email='campbell@dxclabs.com',
-    url='https://github.com/campbellmc/django-diagnostic',
+    url='https://github.com/dxclabs/django-diagnostic',
     packages=[
         'django_diagnostic',
     ],
@@ -64,17 +64,15 @@ setup(
     keywords='django-diagnostic',
     classifiers=[
         'Development Status :: 3 - Alpha',
-        'Framework :: Django :: 2.0',
+        'Framework :: Django :: 3.0',
+        'Framework :: Django :: 3.1',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
     ],
 )

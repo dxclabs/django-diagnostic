@@ -5,8 +5,10 @@
 {% block content %}
 <h2>{{ view.page_heading }}</h2>
 
-<h4>Sessions</h4>
-<table class="table">
+<br>
+<h3>Sessions</h3>
+
+<table class="table table-condensed table-striped">
   <tr>
     <th>Session Key</th>
     <th>User ID</th>
@@ -23,6 +25,10 @@
     <td>{{values.full_name}}</td>
     <td>{{values.auth_user_backend}}</td>
     <th>{{values.expire_date}}</th>
+  </tr>
+  {% empty %}
+  <tr>
+      <td>{% trans 'No session data' %}</td>
   </tr>
   {% endfor %}
 </table>

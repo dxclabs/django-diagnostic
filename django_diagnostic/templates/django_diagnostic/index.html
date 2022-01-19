@@ -6,9 +6,7 @@
 {% block content %}
 <h2>{{ view.page_heading }}</h2>
 
-<!--<h4 class="text-center">{% trans "Diagnostic Page Registry" %}</h4>-->
-
-<table class="table table-striped">
+<table class="table table-condensed table-striped">
   <tr>
     <th>Name</th>
     <th>App</th>
@@ -19,6 +17,10 @@
     <td><a href="{% url 'django_diagnostic:dispatcher' value.app_name value.slug %}">{% trans value.link_name %}</a></td>
     <td><a href="{% url 'django_diagnostic:dispatcher' value.app_name value.slug %}">{% trans value.app_name %}</a></td>
     <td>{{value.doc}}</td>
+  </tr>
+  {% empty %}
+  <tr>
+      <td>{% trans 'No registry items' %}</td>
   </tr>
   {% endfor %}
 </table>
