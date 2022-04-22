@@ -46,7 +46,7 @@ colorama==0.4.4
     # via
     #   -r .\requirements\requirements.txt
     #   click
-django==4.0.1
+django==4.0.4
     # via
     #   -r .\requirements\requirements.txt
     #   django-braces
