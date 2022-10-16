@@ -52,11 +52,11 @@ class IndexView(SuperuserRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        registry_dict = dict()
+        registry_dict = {}
 
-        for key, value in sorted(Diagnostic.registry.items()):
+        for _key, value in sorted(Diagnostic.registry.items()):
             try:
-                entry = dict()
+                entry = {}
                 module_name = value["module"]
                 function_name = value["name"]
                 my_module = importlib.import_module(module_name)
@@ -82,7 +82,7 @@ class IndexView(SuperuserRequiredMixin, TemplateView):
                     if registry_key not in registry_dict:
                         registry_dict[registry_key] = entry
 
-            except Exception:
+            except KeyError:
                 pass
 
         context["registry"] = registry_dict
@@ -114,7 +114,7 @@ class DispatcherView(SuperuserRequiredMixin, TemplateView):
             return HttpResponseRedirect(reverse("django_diagnostic:index"))
 
 
-class GitCodeRunning(object):
+class GitCodeRunning:
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -279,7 +279,7 @@ class DatabasePostgreSQLView(SuperuserRequiredMixin, TemplateView):
                 db_table_sizes = cursor.fetchall()
                 context["db_table_sizes"] = db_table_sizes
 
-        except Exception:
+        except KeyError:
             pass
 
         return context
@@ -383,7 +383,7 @@ class ManifestView(SuperuserRequiredMixin, TemplateView):
                 context[key.casefold()] = getattr(settings, key)
 
         try:
-            with open(staticfiles, "r") as f:
+            with open(staticfiles) as f:
                 manifest_json_object = json.load(f)
             context["manifest"] = manifest_json_object
         except FileNotFoundError as e:
@@ -430,10 +430,10 @@ class SessionsView(SuperuserRequiredMixin, TemplateView):
         sessions = Session.objects.filter(expire_date__gte=timezone.now())
         context["sessions"] = sessions.values_list("session_key", "expire_date").order_by("-expire_date")
 
-        decoded_sessions = dict()
+        decoded_sessions = {}
         uid_list = []
         for session in sessions:
-            decoded_session = dict()
+            decoded_session = {}
             decoded_session["session_key"] = session.session_key
             decoded_session["expire_date"] = session.expire_date
             data = session.get_decoded()

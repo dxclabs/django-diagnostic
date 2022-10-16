@@ -7,18 +7,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-      # - run: pip install bandit black codespell flake8 isort mypy pytest pyupgrade vulture # tox
-      - run: pip install -r requirements/requirements-test.txt
-      - run: bandit -x "migrations,squashed_migrations" -r django_diagnostic/ || true
-      - run: vulture || true
-      - run: black --check django_diagnostic/ || true
-      - run: codespell --quiet-level=2 || true  # --ignore-words-list="" --skip=""
-      - run: flake8 django_diagnostic/
-      - run: isort --check-only django_diagnostic/ || true
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.9
+      - uses: Gr1N/setup-poetry@v7
+        with:
+          poetry-preview: true
+      - run: poetry --version
+      - run: poetry install --only linters,tests,types
+      - run: shopt -s globstar && poetry run pyupgrade --py39-plus **/*.py
+      - run: shopt -s globstar && poetry run django-upgrade --target-version 4.1 **/*.py
+      - run: poetry run bandit -r django_diagnostic/ -c ./pyproject.toml
+      - run: poetry run vulture
+      - run: poetry run black --check django_diagnostic/
+      - run: poetry run codespell ./django_diagnostic/
+      - run: poetry run flake8 django_diagnostic/ --count --select=E9,F63,F7,F82 --show-source --statistics
+      - run: poetry run isort --check-only --profile black django_diagnostic/
       # - run: tox
-      - run: pip install -r requirements/requirements.txt || true
-      - run: mypy django_diagnostic/
-      - run: pytest django_diagnostic/ || true
-      - run: pytest --doctest-modules django_diagnostic/ || true
-      - run: shopt -s globstar && pyupgrade --py39-plus **/*.py || true
+      - run: poetry install
+      - run: poetry run mypy django_diagnostic/ || true
+      - run: poetry run pytest django_diagnostic/ || true
+      - run: poetry run pytest --doctest-modules django_diagnostic/ || true
