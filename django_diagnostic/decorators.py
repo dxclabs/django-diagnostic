@@ -7,7 +7,7 @@ module_logger = logging.getLogger(__name__)
 
 
 class Diagnostic:
-    registry = dict()
+    registry: dict = {}
 
     @classmethod
     def register(cls, *args, **kwargs):
@@ -15,13 +15,13 @@ class Diagnostic:
             module_logger.debug(f"args: {args}")
             module_logger.debug(f"kwargs: {kwargs}")
             module_logger.debug(f"registry dict currently has {len(cls.registry.keys())}")
-            registration = dict()
+            registration = {}
             registration["name"] = fn.__name__
             registration["module"] = fn.__module__
             try:
                 app_name = fn.__module__.split(".")[0]
                 registration["app_name"] = app_name
-            except Exception:
+            except KeyError:
                 pass
 
             registration["args"] = args
