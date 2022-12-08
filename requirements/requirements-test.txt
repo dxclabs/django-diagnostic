@@ -5,27 +5,22 @@
 #    pip-compile --output-file='.\requirements\requirements-test.txt' '.\requirements\requirements-test.in'
 #
 bandit==1.7.1
-    # via -r .\requirements\requirements-test.in
+    # via -r requirements-test.in
 black==21.12b0
-    # via -r .\requirements\requirements-test.in
-certifi==2021.10.8
+    # via -r requirements-test.in
+certifi==2022.12.7
     # via requests
 charset-normalizer==2.0.10
     # via requests
 click==8.0.3
     # via black
 codecov==2.1.12
-    # via -r .\requirements\requirements-test.in
+    # via -r requirements-test.in
 codespell==2.1.0
-    # via -r .\requirements\requirements-test.in
-colorama==0.4.4
-    # via
-    #   bandit
-    #   click
-    #   tox
+    # via -r requirements-test.in
 coverage==6.2
     # via
-    #   -r .\requirements\requirements-test.in
+    #   -r requirements-test.in
     #   codecov
 distlib==0.3.4
     # via virtualenv
@@ -36,7 +31,7 @@ filelock==3.4.2
     #   tox
     #   virtualenv
 flake8==4.0.1
-    # via -r .\requirements\requirements-test.in
+    # via -r requirements-test.in
 gitdb==4.0.9
     # via gitpython
 gitpython==3.1.25
@@ -44,13 +39,13 @@ gitpython==3.1.25
 idna==3.3
     # via requests
 isort[requirements_deprecated_finder]==5.10.1
-    # via -r .\requirements\requirements-test.in
+    # via -r requirements-test.in
 mccabe==0.6.1
     # via flake8
 mock==4.0.3
-    # via -r .\requirements\requirements-test.in
+    # via -r requirements-test.in
 mypy==0.931
-    # via -r .\requirements\requirements-test.in
+    # via -r requirements-test.in
 mypy-extensions==0.4.3
     # via
     #   black
@@ -80,7 +75,7 @@ pyflakes==2.4.0
 pyparsing==3.0.6
     # via packaging
 pyupgrade==2.31.0
-    # via -r .\requirements\requirements-test.in
+    # via -r requirements-test.in
 pyyaml==6.0
     # via bandit
 requests==2.27.1
@@ -106,7 +101,7 @@ tomli==1.2.3
     #   black
     #   mypy
 tox==3.24.5
-    # via -r .\requirements\requirements-test.in
+    # via -r requirements-test.in
 typing-extensions==4.0.1
     # via
     #   black
@@ -116,7 +111,7 @@ urllib3==1.26.8
 virtualenv==20.13.0
     # via tox
 vulture==2.3
-    # via -r .\requirements\requirements-test.in
+    # via -r requirements-test.in
 yarg==0.1.9
     # via pipreqs
 
