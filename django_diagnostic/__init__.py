@@ -7,5 +7,12 @@ __version__ = "1.0.0"
 # ]
 
 
+# class Bingo(object):
+#     _registry = {}
+
+
+# Foo = Bingo()
+
+
 # def autodiscover():
 #     autodiscover_modules("diagnostic", "diagnostic_views", "diagnostic_views.")
