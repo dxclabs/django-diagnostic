@@ -1,5 +1,0 @@
--r requirements.txt
-
-bump2version
-pip-tools
-wheel
