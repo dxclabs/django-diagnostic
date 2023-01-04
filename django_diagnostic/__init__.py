@@ -1,11 +1,18 @@
-from django.utils.module_loading import autodiscover_modules
+# from django.utils.module_loading import autodiscover_modules
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 
-__all__ = [
-    "autodiscover",
-]
+# __all__ = [
+#     "autodiscover",
+# ]
 
 
-def autodiscover():
-    autodiscover_modules("diagnostic", "diagnostic_views", "diagnostic_views.")
+# class Bingo(object):
+#     _registry = {}
+
+
+# Foo = Bingo()
+
+
+# def autodiscover():
+#     autodiscover_modules("diagnostic", "diagnostic_views", "diagnostic_views.")

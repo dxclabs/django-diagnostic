@@ -1,4 +1,4 @@
-import importlib
+# import importlib
 import json
 import logging
 import os
@@ -15,6 +15,7 @@ from django.db.models import Case, Count, IntegerField, Max, Min, When
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.module_loading import cached_import
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import TemplateView
@@ -57,11 +58,12 @@ class IndexView(SuperuserRequiredMixin, TemplateView):
         for _key, value in sorted(Diagnostic.registry.items()):
             try:
                 entry = {}
-                module_name = value["module"]
-                function_name = value["name"]
-                my_module = importlib.import_module(module_name)
-                my_klass = getattr(my_module, function_name)
-                app_name = my_module.__package__
+                # module_name = value["module"]
+                # function_name = value["name"]
+                # my_module = importlib.import_module(module_name)
+                # my_klass = getattr(my_module, function_name)
+                my_klass = cached_import(value["module"], value["name"])
+                app_name = value["app_name"]
                 entry["doc"] = my_klass.__doc__
 
                 slug_value = value["slug"]
@@ -100,17 +102,18 @@ class DispatcherView(SuperuserRequiredMixin, TemplateView):
                 registry_key = slugify(f"{app_name} {slug}", allow_unicode=True)
                 module_logger.debug(f"retrieving entry with registry key: {registry_key}")
                 entry = Diagnostic.registry[registry_key]
-                module_name = entry["module"]
-                function_name = entry["name"]
-                my_module = importlib.import_module(module_name)
-                my_klass = getattr(my_module, function_name)
+                # module_name = entry["module"]
+                # function_name = entry["name"]
+                # my_module = importlib.import_module(module_name)
+                # my_klass = getattr(my_module, function_name)
+                my_klass = cached_import(entry["module"], entry["name"])
                 return my_klass.as_view()(request, *args, **kwargs)
             else:
                 return HttpResponseRedirect(reverse("django_diagnostic:index"))
         except KeyError:
             return HttpResponseRedirect(reverse("django_diagnostic:index"))
-        except Exception as e:
-            module_logger.error(f"Rendering diagnostic page resulted in error: {str(e)}")
+        except Exception as err:
+            module_logger.error(f"Rendering diagnostic page resulted in error: {str(err)}")
             return HttpResponseRedirect(reverse("django_diagnostic:index"))
 
 
@@ -168,7 +171,7 @@ class CeleryView(SuperuserRequiredMixin, TemplateView):
 @Diagnostic.register(link_name="Celery Results Summary", slug="celery-results-summary")
 class CeleryResultsSummary(SuperuserRequiredMixin, TemplateView):
     """
-    Summary of celery results from TaskResults table
+    Summary of celery results from TaskResults table.
     """
 
     page_title = _("Celery Results Summary")

@@ -1,7 +1,0 @@
-
-# Additional requirements go here
-
-Django>3
-django-braces
-gitpython
-django-celery-results
