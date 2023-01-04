@@ -44,7 +44,7 @@ repos:
       additional_dependencies:
       - flake8-bugbear
       - flake8-comprehensions
-      - flake8-docstrings
+      # - flake8-docstrings
       - flake8-tidy-imports
       - flake8-typing-imports
         # name: Flake8 on commit diff
@@ -68,6 +68,20 @@ repos:
       # entry: codespell --ignore-words ignore-spelling-words.txt readme.md code.py
       # language: python
       # types: [text]
+      args: [-I, .codespellignore]
+      exclude: >
+                (?x)^(
+                    .*\.css\.map|
+                    .*\.json|
+                    .*\.js\.map|
+                    .*\.lock|
+                    .*\.min\.css\.map|
+                    .*\.min\.js|
+                    .*\.po|
+                    .*\.pyc|
+                    shCore.js|
+                    \.tox
+                )$
 
 -   repo: https://github.com/psf/black
     rev: 22.12.0
