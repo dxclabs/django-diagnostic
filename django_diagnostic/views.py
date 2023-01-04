@@ -15,6 +15,7 @@ from django.db.models import Case, Count, IntegerField, Max, Min, When
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.module_loading import autodiscover_modules
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import TemplateView
@@ -91,6 +92,9 @@ class IndexView(SuperuserRequiredMixin, TemplateView):
 
 class DispatcherView(SuperuserRequiredMixin, TemplateView):
     def dispatch(self, request, *args, **kwargs):
+        if not Diagnostic.is_initialised:
+            autodiscover_modules("diagnostic", "diagnostic_views", "diagnostic_views.")
+
         try:
             slug = self.kwargs.get("slug", "")
             module_logger.debug(f"diagnostic dispatcher attempting to use slug: {slug}")

@@ -9,6 +9,9 @@ module_logger = logging.getLogger(__name__)
 class Diagnostic:
     registry: dict = {}
 
+    def is_initialised(self) -> bool:
+        return bool(self.registry)
+
     @classmethod
     def register(cls, *args, **kwargs):
         def decorator(fn):
