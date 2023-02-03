@@ -40,7 +40,7 @@ authors = ["DXCLABS LTD"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-Django = "^4.0"
+Django = "^4.1"
 GitPython = "^3.1.27"
 django-braces = "^1.15.0"
 
