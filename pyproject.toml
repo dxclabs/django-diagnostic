@@ -44,7 +44,7 @@ verbose = false
 
 [tool.poetry]
 name = "django-diagnostic"
-version="1.4.0"
+version="1.5.0"
 description="provides diagnostic pages for django application"
 authors = ["DXCLABS LTD"]
 
