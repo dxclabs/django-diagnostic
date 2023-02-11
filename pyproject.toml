@@ -5,7 +5,7 @@ git-email = "campbell@idlestate.com"
 changelog-file = "docs/changelog.rst"
 changelog-header = "###############"
 version-header = "="
-version-strings = ["setup.cfg", "pyproject.toml", "django_diagnostic/__init__.py"]
+version-strings = ["pyproject.toml", "django_diagnostic/__init__.py"]
 build-system = "poetry"
 
 [tool.bandit]
@@ -73,7 +73,6 @@ pytest = "^7.1.2"
 pytest-django = "^4.5.2"
 
 [tool.poetry.group.dev.dependencies]
-bump2version = "^1.0.1"
 django-debug-panel = "^0.8.3"
 django-extensions = "^3.2.0"
 django-snippetscream = "^0.0.7"
