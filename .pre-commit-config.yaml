@@ -1,22 +1,26 @@
 default_language_version:
-  python: python3.10
+  python: python3.9
 
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
     hooks:
     - id: check-added-large-files
+    - id: check-ast
     - id: check-case-conflict
+    - id: check-executables-have-shebangs
     - id: check-json
     - id: check-merge-conflict
+    - id: check-symlinks
     - id: check-toml
     - id: check-yaml
     - id: debug-statements
     - id: detect-private-key
     - id: end-of-file-fixer
-    - id: check-symlinks
     - id: mixed-line-ending
       args: [--fix=lf]
+    - id: name-tests-test
+      args: [ "--django" ]
     - id: trailing-whitespace
 
 -   repo: https://github.com/asottile/pyupgrade
@@ -44,9 +48,10 @@ repos:
       additional_dependencies:
       - flake8-bugbear
       - flake8-comprehensions
-      # - flake8-docstrings
+      - flake8-print
       - flake8-tidy-imports
       - flake8-typing-imports
+      - flake8-simplify
         # name: Flake8 on commit diff
         # description: This hook limits Flake8 checks to changed lines of code.
         # entry: bash
@@ -58,6 +63,16 @@ repos:
     - id: bandit
       args: ["-c", "pyproject.toml"]
       additional_dependencies: [ "bandit[toml]" ]
+
+- repo: https://github.com/pre-commit/mirrors-mypy
+  rev: 'v1.0.0'
+  hooks:
+    - id: mypy
+      exclude: "[a-zA-Z]*/(migrations|squashed_migrations)/(.)*"
+      additional_dependencies: [
+          djangorestframework-stubs,
+          django-stubs,
+      ]
 
 -   repo: https://github.com/codespell-project/codespell
     rev: v2.2.2
@@ -87,3 +102,9 @@ repos:
     rev: 23.1.0
     hooks:
     - id: black
+
+-   repo: https://github.com/python-poetry/poetry
+    rev: '1.3.0'
+    hooks:
+    - id: poetry-check
+    # - id: poetry-lock
