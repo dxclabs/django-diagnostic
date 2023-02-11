@@ -5,7 +5,7 @@ git-email = "campbell@idlestate.com"
 changelog-file = "docs/changelog.rst"
 changelog-header = "###############"
 version-header = "="
-version-strings = ["setup.cfg", "pyproject.toml", "app/__init__.py"]
+version-strings = ["setup.cfg", "pyproject.toml", "django_diagnostic/__init__.py"]
 build-system = "poetry"
 
 [tool.bandit]
@@ -44,7 +44,7 @@ verbose = false
 
 [tool.poetry]
 name = "django-diagnostic"
-version="1.3.0"
+version="1.4.0"
 description="provides diagnostic pages for django application"
 authors = ["DXCLABS LTD"]
 
