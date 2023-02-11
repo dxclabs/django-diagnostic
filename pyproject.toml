@@ -1,8 +1,18 @@
+[tool.autopub]
+project-name = "django-diagnostic"
+git-username = "campbellmc"
+git-email = "campbell@idlestate.com"
+changelog-file = "docs/changelog.rst"
+changelog-header = "###############"
+version-header = "="
+version-strings = ["setup.py", "pyproject.toml", "app/__init__.py"]
+build-system = "poetry"
+
 [tool.bandit]
 exclude = ["migrations", "squashed_migrations"]
 
 [tool.black]
-line-length = 120
+line-length = 88
 target-version = ['py39', 'py310', 'py311']
 include = '\.pyi?$'
 extend-exclude = '''
@@ -16,7 +26,7 @@ extend-exclude = '''
 atomic = "True"
 known_first_party = "django_diagnostic"
 known_django = "django"
-line_length = 120
+line_length = 88
 profile = "black"
 remove_redundant_aliases = "True"
 sections = "FUTURE,STDLIB,DJANGO,THIRDPARTY,FIRSTPARTY,LOCALFOLDER"
@@ -71,6 +81,7 @@ flake8-bugbear = "^22.8.23"
 ipdb = "^0.13.9"
 ipython = "^8.4.0"
 pre-commit = "^2.19.0"
+autopub = "^0.2.2"
 
 [build-system]
 requires = ["poetry-core>=1.1.0"]
