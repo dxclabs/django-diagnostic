@@ -1,3 +1,3 @@
 Release type: minor
 
-Update iPython version
+ci: update pre-commit
