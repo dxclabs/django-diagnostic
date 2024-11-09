@@ -76,10 +76,14 @@ class IndexView(SuperuserRequiredMixin, TemplateView):
                     entry["app_name"] = app_name_slug
 
                 if "app_name" in entry and "slug" in entry:
-                    module_logger.debug(f"Adding diagnostic to index: {app_name} {slug}")
+                    module_logger.debug(
+                        f"Adding diagnostic to index: {app_name} {slug}"
+                    )
 
                     entry["link_name"] = value["kwargs"]["link_name"]
-                    registry_key = slugify(f"{app_name} {slug_value}", allow_unicode=True)
+                    registry_key = slugify(
+                        f"{app_name} {slug_value}", allow_unicode=True
+                    )
 
                     if registry_key not in registry_dict:
                         registry_dict[registry_key] = entry
@@ -97,10 +101,14 @@ class DispatcherView(SuperuserRequiredMixin, TemplateView):
             slug = self.kwargs.get("slug", "")
             module_logger.debug(f"diagnostic dispatcher attempting to use slug: {slug}")
             app_name = self.kwargs.get("app_name", "")
-            module_logger.debug(f"diagnostic dispatcher attempting to use app_name: {app_name}")
+            module_logger.debug(
+                f"diagnostic dispatcher attempting to use app_name: {app_name}"
+            )
             if slug_re.match(slug) and slug_re.match(app_name):
                 registry_key = slugify(f"{app_name} {slug}", allow_unicode=True)
-                module_logger.debug(f"retrieving entry with registry key: {registry_key}")
+                module_logger.debug(
+                    f"retrieving entry with registry key: {registry_key}"
+                )
                 entry = Diagnostic.registry[registry_key]
                 # module_name = entry["module"]
                 # function_name = entry["name"]
@@ -113,7 +121,9 @@ class DispatcherView(SuperuserRequiredMixin, TemplateView):
         except KeyError:
             return HttpResponseRedirect(reverse("django_diagnostic:index"))
         except Exception as err:
-            module_logger.error(f"Rendering diagnostic page resulted in error: {str(err)}")
+            module_logger.error(
+                f"Rendering diagnostic page resulted in error: {str(err)}"
+            )
             return HttpResponseRedirect(reverse("django_diagnostic:index"))
 
 
@@ -127,7 +137,9 @@ class GitCodeRunning:
             context["git_detached_head"] = repo.head.is_detached
             if repo.head.is_detached is not True:
                 context["git_active_branch"] = repo.active_branch.name
-                context["active_branch_tracking_branch"] = repo.active_branch.tracking_branch()
+                context["active_branch_tracking_branch"] = (
+                    repo.active_branch.tracking_branch()
+                )
                 context["hexsha"] = repo.active_branch.object.hexsha
             else:
                 context["hexsha"] = repo.head.object.hexsha
@@ -255,7 +267,9 @@ class DatabasePostgreSQLView(SuperuserRequiredMixin, TemplateView):
             context["db_dsn"] = connection.cursor().connection.dsn
 
             with connection.cursor() as cursor:
-                cursor.execute("SELECT pg_size_pretty( pg_database_size(%s));", [db_name])
+                cursor.execute(
+                    "SELECT pg_size_pretty( pg_database_size(%s));", [db_name]
+                )
                 db_size_row = cursor.fetchone()
                 context["db_size"] = db_size_row[0]
 
@@ -431,7 +445,9 @@ class SessionsView(SuperuserRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
 
         sessions = Session.objects.filter(expire_date__gte=timezone.now())
-        context["sessions"] = sessions.values_list("session_key", "expire_date").order_by("-expire_date")
+        context["sessions"] = sessions.values_list(
+            "session_key", "expire_date"
+        ).order_by("-expire_date")
 
         decoded_sessions = {}
         uid_list = []
