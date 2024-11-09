@@ -45,7 +45,9 @@ class Diagnostic:
 
                 # module_logger.debug(f"diag registry key: {registry_key} reg length: {len(cls.registry.keys())}")
             else:
-                module_logger.debug(f"unable to register diagnostic registry key: {registry_key}")
+                module_logger.debug(
+                    f"unable to register diagnostic registry key: {registry_key}"
+                )
 
             return fn
 
