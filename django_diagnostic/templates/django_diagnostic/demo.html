@@ -1,23 +1,19 @@
 {% extends 'django_diagnostic/one_column_fluid.html' %}
-
-{% block title %}{{ view.page_title }}{% endblock title %}
-
+{% block title %}
+  {{ view.page_title }}
+{% endblock title %}
 {% block content %}
-<h2>{{ view.page_heading }}</h2>
-
-
-<br>
-<h3>Demo Settings</h3>
-
-<table class='table table-condensed table-striped'>
-  <tr>
-    <th>Setting</th>
-    <th>Status</th>
-  </tr>
-  <tr>
-    <td>Demo</td>
-    <td>{{demo}}</td>
-  </tr>
-</table>
-
+  <h2>{{ view.page_heading }}</h2>
+  <br>
+  <h3 class="text-primary mt-4 mb-2">Demo Settings</h3>
+  <table class="table w-auto table-condensed table-striped">
+    <tr>
+      <th>Setting</th>
+      <th>Status</th>
+    </tr>
+    <tr>
+      <td>Demo</td>
+      <td>{{ demo }}</td>
+    </tr>
+  </table>
 {% endblock content %}

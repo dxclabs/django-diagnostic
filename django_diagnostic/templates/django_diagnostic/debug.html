@@ -8,8 +8,10 @@
 {% include "django_diagnostic/git.html" %}
 
 <br>
-<h3>Debug</h3>
+<h3 class="text-primary mt-4 mb-2">Debug Context</h3>
+<pre>{{ debug_context }}</pre>
 
-<pre> {% filter force_escape %} {% debug %} {% endfilter %} </pre>
+<h3 class="text-primary mt-4 mb-2">Template Debug</h3>
+<pre>{% debug %}</pre>
 
 {% endblock content %}

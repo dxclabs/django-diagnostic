@@ -6,9 +6,9 @@
 <h2>{{ view.page_heading }}</h2>
 
 <br>
-<h3>Sessions</h3>
+<h3 class="text-primary mt-4 mb-2">Sessions</h3>
 
-<table class="table table-condensed table-striped">
+<table class="table w-auto table-condensed table-striped">
   <tr>
     <th>Session Key</th>
     <th>User ID</th>
@@ -24,7 +24,7 @@
     <td>{{values.username}}</td>
     <td>{{values.full_name}}</td>
     <td>{{values.auth_user_backend}}</td>
-    <th>{{values.expire_date}}</th>
+    <td>{{values.expire_date}}</td>
   </tr>
   {% empty %}
   <tr>
