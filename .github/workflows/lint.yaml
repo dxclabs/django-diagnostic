@@ -41,7 +41,7 @@ jobs:
         run: poetry --version
 
       - name: Install testing dependencies
-        run: poetry install --only linters,tests,types
+        run: poetry install --only linters,tests
 
       # - run: poetry run bandit -r django_diagnostic/ -c ./pyproject.toml
 
