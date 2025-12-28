@@ -1,13 +1,13 @@
 [project]
 name = "django-diagnostic"
-description="provides diagnostic pages for a Django application"
+description="Provides diagnostic pages for a Django application"
 authors = [{name = "DXCLABS LTD"}]
 version="1.6.0"
-requires-python = ">=3.12"
+requires-python = ">=3.12,<4.0"
 
 dependencies = [
   "Django>=5.2.9,<6.0",
-  "GitPython>=3.1.27",
+  "psycopg2-binary>=2.9.11",
   "django-braces>=1.15.0"
 ]
 
@@ -115,16 +115,20 @@ unfixable = ["B"]
 "**/tests/*.py" = ["ANN001", "ARG001", "S101"]
 
 
+[project.optional-dependencies]
+git = ["GitPython>=3.1.27"]
+celery_results = ["django-celery-results>=2.6.0"]
 
-[project.group.linters.dependencies]
+
+[tool.poetry.group.linters.dependencies]
 codespell = "^2.4.1"
+django-stubs = "^5.2.8"
 django-upgrade = "^1.29.1"
 mypy = "^1.19.1"
 pyupgrade = "^3.21.2"
 ruff = "^0.14.9"
-django-stubs = "^5.2.8"
 
-[project.group.tests.dependencies]
+[tool.poetry.group.tests.dependencies]
 coverage = "^7.13.0"
 django-nose = "^1.4.7"
 factory-boy = "^3.3.3"
@@ -137,7 +141,8 @@ pytest-socket = "^0.7.0"
 [project.group.types.dependencies]
 
 
-[project.group.dev.dependencies]
+
+[tool.poetry.group.dev.dependencies]
 autopub = "^0.4.1"
 boto3-stubs = "^1.42.9"
 django-debug-toolbar = "^6.1.0"
