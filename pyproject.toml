@@ -2,7 +2,7 @@
 name = "django-diagnostic"
 description="Provides diagnostic pages for a Django application"
 authors = [{name = "DXCLABS LTD"}]
-version="1.6.0"
+version="1.7.0"
 requires-python = ">=3.12,<4.0"
 
 dependencies = [
@@ -139,6 +139,7 @@ pytest-mock = "^3.15.1"
 pytest-socket = "^0.7.0"
 
 [project.group.types.dependencies]
+
 
 
 
