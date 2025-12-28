@@ -34,8 +34,8 @@
 {#    </table>#}
 
 
-    <h3>Celery Diagnostic</h3>
-    <h3> ACTIVE </h3>
+    <h3 class="text-primary mt-4 mb-2">Celery Diagnostic</h3>
+    <h3 class="text-primary mt-4 mb-2">ACTIVE</h3>
     <table class="table table-condensed table-striped">
     {% for k,v in active.items %}
         <tr>
@@ -55,11 +55,11 @@
     {% endfor %}
     </table>
 
-    <h3> SCHEDULED </h3>
+    <h3 class="text-primary mt-4 mb-2">SCHEDULED</h3>
     {{ scheduled }}
 
-    <h3> STATS </h3>
-    <table class="table table-condensed table-striped">
+    <h3 class="text-primary mt-4 mb-2">STATS</h3>
+    <table class="table w-auto table-condensed table-striped">
     {% for k,v in stats.items %}
         <tr>
             <th>{{ k }}</th>

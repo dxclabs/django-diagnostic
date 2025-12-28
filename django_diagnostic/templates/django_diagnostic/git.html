@@ -1,45 +1,44 @@
-<br>
-<h3>Running Code</h3>
+<h3 class="text-primary mt-4 mb-2">Running Code</h3>
 
-<table class="table table-condensed table-striped">
+<table class="table w-auto table-condensed table-striped">
     <tr>
         <td>git describe</td>
-        <th>{{ git_describe }}</th>
+        <td>{{ git_describe }}</td>
         <td></td>
-    <tr>
     </tr>
-    <td>git detached head</td>
-    <th>{{ git_detached_head|yesno:"yes,no,<unknown>" }}</th>
-    <td></td>
+    <tr>
+        <td>git detached head</td>
+        <td>{{ git_detached_head|yesno:"yes,no,<unknown>" }}</td>
+        <td></td>
     </tr>
     <tr>
         <td>git active branch name</td>
-        <th>{{ git_active_branch }}</th>
+        <td>{{ git_active_branch }}</td>
         <td></td>
     </tr>
     <tr>
         <td>git active branch tracking branch</td>
-        <th>{{ active_branch_tracking_branch }}</th>
+        <td>{{ active_branch_tracking_branch }}</td>
         <td></td>
     </tr>
     <tr>
         <td>git hexsha</td>
-        <th>{{ hexsha }}</th>
+        <td>{{ hexsha }}</td>
         <td></td>
     </tr>
     <tr>
         <td>hostname</td>
-        <th>{{ hostname }}</th>
+        <td>{{ hostname }}</td>
         <td></td>
     </tr>
     <tr>
         <td>Django Version</td>
-        <th>{{ django_version }}</th>
+        <td>{{ django_version }}</td>
         <td></td>
     </tr>
     <tr>
         <td>Python Version</td>
-        <th>{{ python_version }}</th>
+        <td>{{ python_version }}</td>
         <td></td>
     </tr>
 </table>

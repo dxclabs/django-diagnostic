@@ -19,18 +19,18 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: set pythonpath
         run: |
-          echo "PYTHONPATH=./django_diagnostic;./tests" >> $GITHUB_ENV
+          echo "PYTHONPATH=./apps" >> $GITHUB_ENV
 
       - name: Set up poetry
         uses: Gr1N/setup-poetry@v9
@@ -41,11 +41,12 @@ jobs:
         run: poetry --version
 
       - name: Install testing dependencies
-        run: poetry install --only linters,tests,types
+        run: poetry install --only linters,tests
 
       # - run: poetry run bandit -r django_diagnostic/ -c ./pyproject.toml
 
       # - run: shopt -s globstar && poetry run pyupgrade --py312-plus **/*.py
+      - run: poetry run pyupgrade --py312-plus $(find . -type f -name "*.py" ! -path "*/.venv/*" ! -path "*/squashed_migrations/*")
 
       # - run: poetry run black --check django_diagnostic/
 

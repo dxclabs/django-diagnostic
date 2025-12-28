@@ -8,7 +8,7 @@
 {% include "django_diagnostic/git.html" %}
 
 <br>
-<h3>OS Environment</h3>
+<h3 class="text-primary mt-4 mb-2">OS Environment</h3>
 
 <table class="table table-condensed table-striped">
     {% for key,value in environ.items|dictsort:0 %}

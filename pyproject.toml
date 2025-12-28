@@ -1,3 +1,16 @@
+[project]
+name = "django-diagnostic"
+description="Provides diagnostic pages for a Django application"
+authors = [{name = "DXCLABS LTD"}]
+version="1.7.0"
+requires-python = ">=3.12,<4.0"
+
+dependencies = [
+  "Django>=5.2.9,<6.0",
+  "psycopg2-binary>=2.9.11",
+  "django-braces>=1.15.0"
+]
+
 [tool.autopub]
 project-name = "django-diagnostic"
 git-username = "ci-bot-dxclabs"
@@ -5,81 +18,142 @@ git-email = "183820094+ci-bot-dxclabs@users.noreply.github.com"
 changelog-file = "docs/changelog.rst"
 changelog-header = "###############"
 version-header = "="
-version-strings = ["pyproject.toml", "django_diagnostic/__init__.py"]
+version-strings = ["django_diagnostic/__init__.py"]
 build-system = "poetry"
 
-[tool.bandit]
-exclude = ["migrations", "squashed_migrations"]
 
-[tool.black]
+[tool.coverage.run]
+source = ["apps"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+]
+omit = [
+    "**/tests/*",
+    "**/migrations/*",
+    "**/squashed_migrations/*",
+    "scripts/*",
+    "zoo/*",
+]
+
+
+[tool.mypy]
+mypy_path = "$MYPY_CONFIG_FILE_DIR"
+namespace_packages = true
+explicit_package_bases = true
+ignore_missing_imports = true
+exclude = [
+    "(?x),^zoo/",
+    "^apps/.*/migrations/",
+    "^apps/.*/squashed_migrations/",
+    "^apps/.*/__pycache__/",
+]
+plugins = "mypy_django_plugin.main"
+
+[tool.pytest.ini_options]
+markers = [
+    "integration: mark test as integration test requiring external resources",
+    "allow_socket: allow socket access for a test",
+]
+
+DJANGO_SETTINGS_MODULE = "zoo.settings.docker"
+
+python_files = [
+  "tests.py",
+  "test_*.py",
+  "*_tests.py"
+]
+
+addopts = [
+  "--ignore=apps/datatableview",
+  "--ignore=apps/feedback",
+  "--ignore=apps/common/fields/full_email/",
+  "--ignore=apps/common/utilities/full_email/"
+]
+#  "--allow=host.docker.internal,127.0.0.1,localhost",
+
+
+[tool.ruff]
+target-version = "py312"
+extend-exclude = ["migrations", "squashed_migrations"]
 line-length = 88
-target-version = ['py39', 'py310', 'py311']
-include = '\.pyi?$'
-extend-exclude = '''
-/(
-  | migrations
-  | squashed_migrations
-)/
-'''
 
-[tool.isort]
-atomic = "True"
-known_first_party = "django_diagnostic"
-known_django = "django"
-line_length = 88
-profile = "black"
-remove_redundant_aliases = "True"
-sections = "FUTURE,STDLIB,DJANGO,THIRDPARTY,FIRSTPARTY,LOCALFOLDER"
-skip = "migrations,squashed_migrations"
-src_paths = ["django_diagnostic"]
+[tool.ruff.lint]
+select = [
+  "A", "ANN", "ARG", "B", "BLE001", "C4", "C90", "DTZ", "E", "EXE", "F",
+  "FBT", "G", "I", "INT", "ISC", "PTH", "Q", "RSE", "RET", "S", "SIM",
+  "SLF", "T10", "T20", "UP"
+]
+# Temporarily disable ANN201
+# Disable missing *args, **kwargs annotation check
+ignore = ["ISC001", "ANN002", "ANN003"]
+# ignore = [
+#   "A001", "A002", "A003",
+#   "ANN003", "ANN201", "ANN202", "ANN204", "ANN206",
+#   "ARG001", "ARG002", "ARG005",
+#   "B006", "B007", "B008", "B009", "B012", "B018", "B020", "B026", "B028", "B904", "B905", "BLE001",
+#   "C408", "C411", "C413", "C419", "C901",
+#   "DTZ001", "DTZ002", "DTZ003", "DTZ004", "DTZ005", "DTZ007", "DTZ011",
+#   "E402", "E501", "E713", "E722", "E731", "E741",
+#   "F401", "F403", "F541", "F811", "F841", "FBT001", "FBT002", "FBT003",
+#   "G001", "G002", "G003", "G004", "G201", "G202",
+#   "I001", "INT001", "INT002", "INT003", "ISC001", "ISC002", "ISC003",
+#   "PTH100", "PTH106", "PTH107", "PTH109", "PTH112", "PTH114", "PTH118", "PTH119", "PTH120", "PTH122", "PTH123",
+#   "Q000", "Q002", "RET501", "RET502", "RET503", "RET504",
+#   "RET505", "RET506", "RET507", "RSE102",
+#   "S105", "S106", "S110", "S112", "S113", "S307", "S308", "S310", "S311", "S324", "S603",
+#   "SIM101", "SIM102", "SIM103", "SIM105", "SIM108", "SIM114", "SIM115", "SIM116", "SIM201", "SIM210", "SIM401",
+#   "SLF001",
+#   "T201", "UP017", "UP031", "UP032", "UP038"
+# ]
 
-[tool.vulture]
-exclude = ["migrations/", "squashed_migrations/"]
-ignore_decorators = ["@task",]
-make_whitelist = true
-min_confidence = 80
-paths = ["django_diagnostic/",]
-sort_by_size = true
-verbose = false
+unfixable = ["B"]
 
-[tool.poetry]
-name = "django-diagnostic"
-version="1.6.0"
-description="provides diagnostic pages for django application"
-authors = ["DXCLABS LTD"]
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["E402"]
+"**/tests/*.py" = ["ANN001", "ARG001", "S101"]
 
-[tool.poetry.dependencies]
-python = "^3.12"
-Django = "^5.0"
-GitPython = "^3.1.27"
-django-braces = "^1.15.0"
+
+[project.optional-dependencies]
+git = ["GitPython>=3.1.27"]
+celery_results = ["django-celery-results>=2.6.0"]
+
 
 [tool.poetry.group.linters.dependencies]
-codespell = "^2.3.0"
-django-upgrade = "^1.22.1"
-pyupgrade = "^2.34.0"
-ruff = "^0.7.3"
+codespell = "^2.4.1"
+django-stubs = "^5.2.8"
+django-upgrade = "^1.29.1"
+mypy = "^1.19.1"
+pyupgrade = "^3.21.2"
+ruff = "^0.14.9"
 
 [tool.poetry.group.tests.dependencies]
-coverage = "^7.6.4"
-factory-boy = "^3.3.1"
-mock = "^5.1.0"
-pytest = "^8.3.3"
-pytest-django = "^4.9.0"
+coverage = "^7.13.0"
 django-nose = "^1.4.7"
+factory-boy = "^3.3.3"
+mock = "^5.2.0"
+pytest = "^9.0.2"
+pytest-django = "^4.11.1"
+pytest-mock = "^3.15.1"
+pytest-socket = "^0.7.0"
 
-[tool.poetry.group.types.dependencies]
+[project.group.types.dependencies]
+
+
 
 
 [tool.poetry.group.dev.dependencies]
 autopub = "^0.4.1"
-boto3-stubs = "^1.35.57"
-django-debug-panel = "^0.8.3"
-django-extensions = "^3.2.3"
+boto3-stubs = "^1.42.9"
+django-debug-toolbar = "^6.1.0"
+django-extensions = "^4.1.0"
 django-snippetscream = "^0.0.7"
+djlint = "^1.36.4"
 ipdb = "^0.13.13"
-ipython = "^8.29.0"
-pre-commit = "^4.0.1"
+ipython = "^9.8.0"
+polib = "^1.2.0"
+pre-commit = "^4.5.0"
 
 [build-system]
 requires = ["poetry-core>=1.1.0"]

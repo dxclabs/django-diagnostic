@@ -3,11 +3,13 @@
 {% block title %}{{ view.page_title }}{% endblock title %}
 
 {% block content %}
-<h2>{{ view.page_heading }}</h2>
+  <h2 class="text-primary mt-4 mb-2">{{ view.page_heading }}</h2>
 
 {% include "django_diagnostic/git.html" %}
 
-<table class="table table-condensed table-striped">
+<h3 class="text-primary mt-4 mb-2">{% trans 'Settings' %}</h3>
+
+<table class="table w-auto table-condensed table-striped">
     {% for key,value in settings.items|dictsort:0 %}
     <tr>
         <td>{{ key }}</td>

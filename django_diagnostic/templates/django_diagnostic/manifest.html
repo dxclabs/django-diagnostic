@@ -6,22 +6,39 @@
 <h2>{{ view.page_heading }}</h2>
 
 <br>
-<h3>Static Files Settings</h3>
-<p>Staticfiles Dirs: {{staticfiles_dirs}}</p>
-<p>Staticfiles Finders: {{staticfiles_finders}}</p>
-<p>Staticfiles Storage: {{staticfiles_storage}}</p>
-<p>Static Root: {{static_root}}</p>
-<p>Static URL: {{static_url}}</p>
+<h3 class="text-primary mt-4 mb-2">Static Files Settings</h3>
+  <table class="table w-auto table-condensed">
+    <tr>
+      <td>Staticfiles Dirs</td>
+      <td>{{staticfiles_dirs}}</td>
+    </tr>
+    <tr>
+      <td>Staticfiles Finders</td>
+      <td>{{staticfiles_finders}}</td>
+    </tr>
+    <tr>
+      <td>Staticfiles Storage</td>
+      <td>{{staticfiles_storage}}</td>
+    </tr>
+    <tr>
+      <td>Static Root</td>
+      <td>{{static_root}}</td>
+    </tr>
+    <tr>
+      <td>Static URL</td>
+      <td>{{static_url}}</td>
+    </tr>
+  </table>
 
 {% if manifest %}
 <br>
-<h3>Static Manifest</h3>
+<h3 class="text-primary mt-4 mb-2">Static Manifest</h3>
 
 <pre> {% filter pprint %} {{manifest}} {% endfilter %} </pre>
 
 {% else %}
 <br>
-<h3>Static Manifest Errors</h3>
+<h3 class="text-primary mt-4 mb-2">Static Manifest Errors</h3>
 
 <p>Unable to load staticfiles manifest.</p>
 <p>Tried to find manifest here: <code>{{staticfiles}}</code></p>

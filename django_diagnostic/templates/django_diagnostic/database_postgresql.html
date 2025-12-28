@@ -1,74 +1,162 @@
 {% extends 'django_diagnostic/one_column_fluid.html' %}
-
-{% block title %}{{ view.page_title }}{% endblock title %}
-
+{% block title %}
+  {{ view.page_title }}
+{% endblock title %}
 {% block content %}
-<h2>{{ view.page_heading }}</h2>
+  <h2 class="text-primary mt-4 mb-2">{{ view.page_heading }}</h2>
+  <br>
+  <h3 class="text-primary mt-4 mb-2">Postgresql</h3>
+  <div class="alert alert-info fs-6">
+    <strong>Database:</strong>
+    <code>{{ db_name }}</code>
+    <span class="text-muted">({{ app_env }})</span>
+  </div>
 
-<br>
-<h3>Postgresql</h3>
+  <h3 class="text-primary mt-4 mb-2">Database Health</h3>
+  <table class="table w-auto table-condensed">
+    <tr>
+      <td>Checksums</td>
+      <td>
+        {% if db_checksums == 'on' %}
+          <span class="text-success">On</span>
+        {% else %}
+          <span class="text-danger">Off</span>
+        {% endif %}
+      </td>
+    </tr>
+    <tr>
+      <td>Active Connections</td>
+      <td>{{ db_connections.0.0 }}</td>
+    </tr>
+    <tr>
+      <td>Idle in Transaction</td>
+      <td>
+        {% if db_connections.0.2 > 0 %}
+          <span class="text-danger">{{ db_connections.0.2 }}</span>
+        {% else %}
+          {{ db_connections.0.2 }}
+        {% endif %}
+      </td>
+    </tr>
+    <tr>
+      <td>Total Connections</td>
+      <td>{{ db_connections.0.3 }}</td>
+    </tr>
+  </table>
+  {% if db_long_queries %}
+    <h3 class="text-primary mt-4 mb-2">Long-Running Queries</h3>
+    <table class="table table-condensed table-striped">
+      <tr>
+        <th>PID</th>
+        <th>Duration</th>
+        <th>State</th>
+        <th>Wait</th>
+        <th>Query</th>
+      </tr>
+      {% for q in db_long_queries %}
+        <tr>
+          <td>{{ q.0 }}</td>
+          <td>{{ q.1 }}</td>
+          <td>{{ q.2 }}</td>
+          <td>{{ q.3 }} {{ q.4 }}</td>
+          <td class="text-truncate" style="max-width: 500px;"><code>{{ q.5 }}</code></td>
+        </tr>
+      {% endfor %}
+    </table>
+  {% endif %}
+  {% if db_blocked_locks %}
+    <h3 class="text-danger">Blocked Locks</h3>
+    <table class="table table-condensed table-striped">
+      <tr>
+        <th>Type</th>
+        <th>Relation</th>
+        <th>Mode</th>
+      </tr>
+      {% for lock in db_blocked_locks %}
+        <tr>
+          <td>{{ lock.0 }}</td>
+          <td>{{ lock.1 }}</td>
+          <td>{{ lock.2 }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  {% endif %}
+  <h3 class="text-primary mt-4 mb-2">Largest Tables (Top 10)</h3>
+  <table class="table table-condensed table-striped">
+    <tr>
+      <th>OID</th>
+      <th>Table Schema</th>
+      <th>Table Name</th>
+      <th>Row Estimate</th>
+      <!-- <th>Total Bytes</th>
+      <th>Index Bytes</th>
+      <th>Toast Bytes</th>
+      <th>Table Bytes</th> -->
+      <th>Total</th>
+      <th>Index</th>
+      <th>Toast</th>
+      <th>Table</th>
+    </tr>
+    {% for table in db_table_sizes %}
+      <tr>
+        <td>{{ table.0 }}</td>
+        <td>{{ table.1 }}</td>
+        <td>{{ table.2 }}</td>
+        <td>{{ table.3 }}</td>
+        <!-- <td>{{ table.4 }}</td>
+        <td>{{ table.5 }}</td>
+        <td>{{ table.6 }}</td>
+        <td>{{ table.7 }}</td> -->
+        <td>{{ table.8 }}</td>
+        <td>{{ table.9 }}</td>
+        <td>{{ table.10 }}</td>
+        <td>{{ table.11 }}</td>
+        <td>{{ table.12 }}</td>
+      </tr>
+    {% empty %}
+      <tr>
+        <td>{% trans 'No table data' %}</td>
+      </tr>
+    {% endfor %}
+  </table>
 
-<table class="table table-condensed table-striped">
-  <tr>
-    <td>Database Name</td>
-    <td>{{db_name}}</td>
-  </tr>
-  <tr>
-    <td>Database Version</td>
-    <td>{{db_version}}</td>
-  </tr>
-  <tr>
-    <td>Database DSN</td>
-    <td>{{db_dsn}}</td>
-  </tr>
-  <tr>
-    <td>Database Status</td>
-    <td>{{db_status}}</td>
-  </tr>
-  <tr>
-    <td>Database Size</td>
-    <td>{{db_size}}</td>
-  </tr>
-</table>
+  <h3 class="text-primary mt-4 mb-2">Installed Extensions</h3>
+  <table class="table w-auto table-condensed table-striped">
+    <tr>
+      <th>Name</th>
+      <th>Version</th>
+      <th>Schema</th>
+    </tr>
+    {% for ext in db_extensions %}
+      <tr>
+        <td>{{ ext.0 }}</td>
+        <td>{{ ext.1 }}</td>
+        <td>{{ ext.2 }}</td>
+      </tr>
+    {% endfor %}
+  </table>
 
-<br>
-<h3>Table Sizes for {{db_name}}</h3>
-<table class="table table-condensed table-striped">
-  <tr>
-    <th>OID</th>
-    <th>Table Schema</th>
-    <th>Table Name</th>
-    <th>Row Estimate</th>
-    <th>Total Bytes</th>
-    <th>Index Bytes</th>
-    <th>Toast Bytes</th>
-    <th>Table Bytes</th>
-    <th>Total</th>
-    <th>Index</th>
-    <th>Toast</th>
-    <th>Table</th>
-  </tr>
-  {% for table in db_table_sizes %}
-  <tr>
-    <td>{{table.0}}</td>
-    <td>{{table.1}}</td>
-    <td>{{table.2}}</td>
-    <td>{{table.3}}</td>
-    <td>{{table.4}}</td>
-    <td>{{table.5}}</td>
-    <td>{{table.6}}</td>
-    <td>{{table.7}}</td>
-    <td>{{table.8}}</td>
-    <td>{{table.9}}</td>
-    <td>{{table.10}}</td>
-    <td>{{table.11}}</td>
-    <td>{{table.12}}</td>
-  </tr>
-  {% empty %}
-  <tr>
-      <td>{% trans 'No table data' %}</td>
-  </tr>
-  {% endfor %}
-</table>
-
+  <h3 class="text-primary mt-4 mb-2">Database Info</h3>
+  <table class="table w-auto table-condensed table-striped">
+    <tr>
+      <td>Name</td>
+      <td>{{ db_name }}</td>
+    </tr>
+    <tr>
+      <td>Version</td>
+      <td>{{ db_version }}</td>
+    </tr>
+    <tr>
+      <td>DSN</td>
+      <td><code>{{ db_dsn }}</code></td>
+    </tr>
+    <tr>
+      <td>Status</td>
+      <td>{{ db_status }}</td>
+    </tr>
+    <tr>
+      <td>Size</td>
+      <td>{{ db_size }}</td>
+    </tr>
+  </table>
 {% endblock content %}
