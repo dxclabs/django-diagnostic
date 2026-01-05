@@ -145,7 +145,7 @@ pytest-socket = "^0.7.0"
 
 [tool.poetry.group.dev.dependencies]
 autopub = "^0.4.1"
-boto3-stubs = "^1.42.9"
+boto3-stubs = "^1.42.21"
 django-debug-toolbar = "^6.1.0"
 django-extensions = "^4.1.0"
 django-snippetscream = "^0.0.7"
