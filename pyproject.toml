@@ -2,7 +2,7 @@
 name = "django-diagnostic"
 description = "Provides diagnostic pages for a Django application"
 authors = [{name = "DXCLABS LTD"}]
-version = "1.8.0"
+version = "1.7.0"
 requires-python = ">=3.12,<4.0"
 
 dependencies = [

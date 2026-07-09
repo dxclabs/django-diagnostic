@@ -412,7 +412,7 @@ wheels = [
 
 [[package]]
 name = "django-diagnostic"
-version = "1.8.0"
+version = "1.7.0"
 source = { editable = "." }
 dependencies = [
     { name = "django" },
