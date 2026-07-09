@@ -15,15 +15,23 @@ dependencies = [
 git = ["GitPython>=3.1.27"]
 celery_results = ["django-celery-results>=2.6.0"]
 
-[tool.autopub]
-project-name = "django-diagnostic"
-git-username = "ci-bot-dxclabs"
-git-email = "183820094+ci-bot-dxclabs@users.noreply.github.com"
-changelog-file = "docs/changelog.rst"
-changelog-header = "###############"
-version-header = "="
-version-strings = ["django_diagnostic/__init__.py"]
-build-system = "hatchling"
+[tool.commitizen]
+name = "cz_customize"
+version_files = [
+    "django_diagnostic/__init__.py",
+]
+version_scheme = "semver2"
+tag_format = "$version"
+legacy_tag_formats = ["v$version"]
+bump_message = "bump: version $current_version → $new_version"
+changelog_file = "docs/changelog.rst"
+update_changelog_on_bump = true
+version_provider = "pep621"
+
+[tool.commitizen.customize]
+bump_pattern = "^(feat|fix|perf|refactor|build|BREAKING CHANGE)"
+bump_map = {"^.+!" = "MAJOR", "BREAKING CHANGE" = "MAJOR", "^feat" = "MINOR", "^(fix|perf|refactor|build)" = "PATCH"}
+schema_pattern = '(?s)(build|bump|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\(\S+\))?!?:[^\n\r]+((\n\n.*)|(\s*))?$'
 
 
 [tool.coverage.run]
@@ -100,8 +108,8 @@ tests = [
     "pytest-socket>=0.7.0",
 ]
 dev = [
-    "autopub>=0.4.1",
     "boto3-stubs>=1.42.9",
+    "commitizen>=4.16.0",
     "django-debug-toolbar>=6.1.0",
     "django-extensions>=4.1.0",
     "django-snippetscream>=0.0.7",

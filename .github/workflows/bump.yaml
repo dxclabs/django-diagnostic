@@ -1,0 +1,67 @@
+name: bump
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: "!startsWith(github.event.head_commit.message, 'bump:')"
+
+    steps:
+      - name: Generate GitHub App token
+        uses: actions/create-github-app-token@v3
+        id: app-token
+        with:
+          client-id: ${{ vars.RELEASE_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Fetch all tags
+        run: git fetch origin --tags --force
+
+      - name: Debug - list tags
+        run: git tag --sort=-v:refname
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install commitizen
+        run: pip install commitizen
+
+      - name: Configure git
+        run: |
+          git config user.name "ci-bot-dxclabs"
+          git config user.email "183820094+ci-bot-dxclabs@users.noreply.github.com"
+
+      - name: Bump version and push tag
+        run: |
+          cz bump --yes --changelog || EXIT_CODE=$?
+          if [ "${EXIT_CODE}" = "3" ] || [ "${EXIT_CODE}" = "21" ]; then
+            echo "No commits to bump, skipping"
+            exit 0
+          elif [ -n "${EXIT_CODE}" ]; then
+            exit $EXIT_CODE
+          fi
+        env:
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+
+      - name: Debug - list tags
+        run: git tag --sort=-v:refname
+
+      - name: Push changes and tag
+        run: |
+          git push
+          git push --tags
