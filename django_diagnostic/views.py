@@ -1,4 +1,3 @@
-# import importlib
 import json
 import logging
 import os
@@ -21,10 +20,8 @@ from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.module_loading import cached_import
-from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import TemplateView
-from git import InvalidGitRepositoryError, NoSuchPathError
 from psycopg2.extensions import (
     STATUS_BEGIN,
     STATUS_IN_TRANSACTION,
@@ -34,9 +31,15 @@ from psycopg2.extensions import (
 
 from django_diagnostic.decorators import Diagnostic
 
+# GitPython is an optional extra (`django-diagnostic[git]`) -- the whole module
+# must stay importable without it, since GitCodeRunning degrades gracefully.
 HAS_GIT = False
 try:
-    from git import Repo
+    from git import (  # ty: ignore[unresolved-import]
+        InvalidGitRepositoryError,
+        NoSuchPathError,
+        Repo,
+    )
 
     HAS_GIT = True
 except ImportError:
@@ -44,7 +47,7 @@ except ImportError:
 
 HAS_TASK_RESULT = False
 try:
-    from django_celery_results.models import TaskResult
+    from django_celery_results.models import TaskResult  # ty: ignore[unresolved-import]
 
     HAS_TASK_RESULT = True
 except ImportError:
@@ -124,101 +127,103 @@ class IndexView(SuperuserRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         registry_dict = {}
 
-        for _key, value in sorted(Diagnostic.registry.items()):
+        for registry_key, value in sorted(Diagnostic.registry.items()):
             try:
-                entry = {}
-                # module_name = value["module"]
-                # function_name = value["name"]
-                # my_module = importlib.import_module(module_name)
-                # my_klass = getattr(my_module, function_name)
                 my_klass = cached_import(value["module"], value["name"])
-                app_name = value["app_name"]
-                entry["doc"] = my_klass.__doc__
+            except (ImportError, AttributeError) as e:
+                module_logger.warning(
+                    "Diagnostic registry entry %s failed to import: %s",
+                    registry_key,
+                    e,
+                )
+                continue
 
-                slug_value = value["slug"]
-                slug = slugify(slug_value, allow_unicode=True)
-                if slug_re.match(slug):
-                    entry["slug"] = slug
-
-                app_name_slug = slugify(app_name)
-                if slug_re.match(app_name_slug):
-                    entry["app_name"] = app_name_slug
-
-                if "app_name" in entry and "slug" in entry:
-                    module_logger.debug(
-                        "Adding diagnostic to index: %s %s", app_name, slug
-                    )
-
-                    entry["link_name"] = value["kwargs"]["link_name"]
-                    registry_key = slugify(
-                        f"{app_name} {slug_value}", allow_unicode=True
-                    )
-
-                    if registry_key not in registry_dict:
-                        registry_dict[registry_key] = entry
-
+            try:
+                link_name = value["kwargs"]["link_name"]
             except KeyError:
-                pass
+                module_logger.warning(
+                    "Diagnostic registry entry %s is missing link_name",
+                    registry_key,
+                )
+                continue
+
+            registry_dict[registry_key] = {
+                "doc": my_klass.__doc__,
+                "slug": value["slug"],
+                "app_name": value["app_name"],
+                "link_name": link_name,
+            }
 
         context["registry"] = registry_dict
         return context
 
 
 class DispatcherView(SuperuserRequiredMixin, TemplateView):
-    def dispatch(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+    def dispatch(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:  # noqa: ARG002
+        slug = self.kwargs.get("slug", "")
+        app_name = self.kwargs.get("app_name", "")
+
+        if not (slug_re.match(slug) and slug_re.match(app_name)):
+            return HttpResponseRedirect(reverse("django_diagnostic:index"))
+
+        registry_key = Diagnostic.build_registry_key(app_name, slug)
+        module_logger.debug(
+            "DIAGNOSTIC DISPATCHER retrieving entry with registry key: %s",
+            registry_key,
+        )
+
         try:
-            slug = self.kwargs.get("slug", "")
-            module_logger.debug(
-                "DIAGNOSTIC DISPATCHER attempting to use slug: %s", slug
-            )
-            app_name = self.kwargs.get("app_name", "")
-            module_logger.debug(
-                "DIAGNOSTIC DISPATCHER attempting to use app_name: %s", app_name
-            )
-            if slug_re.match(slug) and slug_re.match(app_name):
-                registry_key = slugify(f"{app_name} {slug}", allow_unicode=True)
-                module_logger.debug(
-                    "DIAGNOSTIC DISPATCHER retrieving entry with registry key: %s",
-                    registry_key,
-                )
-                entry = Diagnostic.registry[registry_key]
-                # module_name = entry["module"]
-                # function_name = entry["name"]
-                # my_module = importlib.import_module(module_name)
-                # my_klass = getattr(my_module, function_name)
-                my_klass = cached_import(entry["module"], entry["name"])
-                return my_klass.as_view()(request, *args, **kwargs)
-            return HttpResponseRedirect(reverse("django_diagnostic:index"))
-        except KeyError:
-            return HttpResponseRedirect(reverse("django_diagnostic:index"))
-        except Exception as e:
-            module_logger.exception(
-                "Rendering diagnostic page resulted in error: %s", e
+            entry = Diagnostic.registry[registry_key]
+            my_klass = cached_import(entry["module"], entry["name"])
+        except (KeyError, ImportError, AttributeError) as e:
+            module_logger.warning(
+                "Diagnostic dispatcher could not resolve registry key %s: %s",
+                registry_key,
+                e,
             )
             return HttpResponseRedirect(reverse("django_diagnostic:index"))
+
+        # Deliberately call with no args/kwargs: the dispatcher's own
+        # app_name/slug URL kwargs belong to this view, not the target
+        # report, and forwarding them silently corrupted self.kwargs on
+        # any report that reads it. Errors raised by the report itself
+        # are intentionally left to propagate to Django's normal
+        # exception handling rather than being swallowed here.
+        return my_klass.as_view()(request)
+
+
+def _git_env_fallback_context() -> dict[str, Any]:
+    return {
+        "git_describe": os.environ.get("SHORT_SHA", _("<unknown>")),
+        "git_active_branch": os.environ.get("BRANCH_NAME", _("<unknown>")),
+        "active_branch_tracking_branch": _("<unknown>"),
+        "hexsha": os.environ.get("COMMIT_SHA", _("<unknown>")),
+    }
 
 
 class GitCodeRunning:
     def get_context_data(self, **kwargs) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
+        # Mixin is always combined with a Django View subclass that provides
+        # get_context_data via the MRO; ty can't infer that statically.
+        context = super().get_context_data(**kwargs)  # ty: ignore[unresolved-attribute]
 
-        try:
-            repo = Repo(search_parent_directories=True)
-            context["git_describe"] = repo.git.describe()
-            context["git_detached_head"] = repo.head.is_detached
-            if repo.head.is_detached is not True:
-                context["git_active_branch"] = repo.active_branch.name
-                context["active_branch_tracking_branch"] = (
-                    repo.active_branch.tracking_branch()
-                )
-                context["hexsha"] = repo.active_branch.object.hexsha
-            else:
-                context["hexsha"] = repo.head.object.hexsha
-        except (InvalidGitRepositoryError, NoSuchPathError):
-            context["git_describe"] = os.environ.get("SHORT_SHA", _("<unknown>"))
-            context["git_active_branch"] = os.environ.get("BRANCH_NAME", _("<unknown>"))
-            context["active_branch_tracking_branch"] = _("<unknown>")
-            context["hexsha"] = os.environ.get("COMMIT_SHA", _("<unknown>"))
+        if HAS_GIT:
+            try:
+                repo = Repo(search_parent_directories=True)
+                context["git_describe"] = repo.git.describe()
+                context["git_detached_head"] = repo.head.is_detached
+                if repo.head.is_detached is not True:
+                    context["git_active_branch"] = repo.active_branch.name
+                    context["active_branch_tracking_branch"] = (
+                        repo.active_branch.tracking_branch()
+                    )
+                    context["hexsha"] = repo.active_branch.object.hexsha
+                else:
+                    context["hexsha"] = repo.head.object.hexsha
+            except (InvalidGitRepositoryError, NoSuchPathError):
+                context.update(_git_env_fallback_context())
+        else:
+            context.update(_git_env_fallback_context())
 
         context["django_version"] = django.VERSION
         context["python_version"] = sys.version
@@ -545,10 +550,10 @@ class ManifestView(SuperuserRequiredMixin, TemplateView):
         context["staticfiles_storage"] = settings.STORAGES.get("staticfiles")
 
         try:
-            with Path.open(staticfiles) as f:
+            with Path(staticfiles).open() as f:
                 manifest_json_object = json.load(f)
             context["manifest"] = manifest_json_object
-        except FileNotFoundError as e:
+        except OSError as e:
             context["error"] = str(e)
 
         return context
@@ -645,5 +650,50 @@ class SessionsView(SuperuserRequiredMixin, TemplateView):
             else:
                 session_data["username"] = None
                 session_data["full_name"] = None
+
+        return context
+
+
+@Diagnostic.register(
+    link_name="Diagnostic Reports Registry", slug="diagnostic-reports-registry"
+)
+class RegistryDiagnosticView(SuperuserRequiredMixin, TemplateView):
+    """
+    Introspection of the full diagnostic report registry, including entries
+    that fail to import -- unlike the main index, which silently skips them.
+    """
+
+    page_title = _("Diagnostic Reports Registry")
+    page_heading = _("Diagnostic Reports Registry")
+
+    def get_template_names(self) -> str:
+        return "django_diagnostic/registry.html"
+
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+
+        entries = []
+        for registry_key, value in sorted(Diagnostic.registry.items()):
+            entry = {
+                "registry_key": registry_key,
+                "app_name": value.get("app_name"),
+                "slug": value.get("slug"),
+                "module": value.get("module"),
+                "name": value.get("name"),
+                "link_name": value.get("kwargs", {}).get("link_name"),
+                "doc": None,
+                "import_error": None,
+            }
+            try:
+                my_klass = cached_import(value["module"], value["name"])
+                entry["doc"] = my_klass.__doc__
+            except (ImportError, AttributeError) as e:
+                entry["import_error"] = str(e)
+
+            entries.append(entry)
+
+        context["entries"] = entries
+        context["registry_count"] = len(entries)
+        context["failed_count"] = sum(1 for entry in entries if entry["import_error"])
 
         return context

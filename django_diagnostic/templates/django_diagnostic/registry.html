@@ -1,0 +1,44 @@
+{% extends 'django_diagnostic/one_column_fluid.html' %}
+{% load i18n %}
+
+{% block title %}{{ view.page_title }}{% endblock title %}
+
+{% block content %}
+<h2>{{ view.page_heading }}</h2>
+<p>
+  {% blocktrans count counter=registry_count %}{{ counter }} registered report{% plural %}{{ counter }} registered reports{% endblocktrans %},
+  {{ failed_count }} {% trans "failed to import" %}
+</p>
+
+<table class="table table-condensed table-striped">
+  <tr>
+    <th>{% trans "Link Name" %}</th>
+    <th>{% trans "App" %}</th>
+    <th>{% trans "Slug" %}</th>
+    <th>{% trans "Module" %}</th>
+    <th>{% trans "Class" %}</th>
+    <th>{% trans "Status" %}</th>
+  </tr>
+  {% for entry in entries %}
+  <tr>
+    <td>{{ entry.link_name|default:"—" }}</td>
+    <td>{{ entry.app_name }}</td>
+    <td>{{ entry.slug }}</td>
+    <td>{{ entry.module }}</td>
+    <td>{{ entry.name }}</td>
+    <td>
+      {% if entry.import_error %}
+        <span class="text-danger">{% trans "Import failed" %}: {{ entry.import_error }}</span>
+      {% else %}
+        <span class="text-success">{% trans "OK" %}</span>
+      {% endif %}
+    </td>
+  </tr>
+  {% empty %}
+  <tr>
+    <td colspan="6">{% trans 'No registry items' %}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock content %}

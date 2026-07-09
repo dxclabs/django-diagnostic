@@ -8,9 +8,9 @@ from django.conf import settings
 from django.test.utils import get_runner
 
 
-def run_tests(*test_args):
+def run_tests(*test_args: str) -> None:
     if not test_args:
-        test_args = ["tests"]
+        test_args = ("tests",)
 
     os.environ["DJANGO_SETTINGS_MODULE"] = "tests.settings"
     django.setup()

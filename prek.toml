@@ -1,0 +1,62 @@
+[default_language_version]
+python = "python3.12"
+
+[[repos]]
+repo = "https://github.com/pre-commit/pre-commit-hooks"
+rev = "v6.0.0"
+hooks = [
+  { id = "check-added-large-files" },
+  { id = "check-ast" },
+  { id = "check-case-conflict" },
+  { id = "check-executables-have-shebangs" },
+  { id = "check-json" },
+  { id = "check-merge-conflict" },
+  { id = "check-symlinks" },
+  { id = "check-toml" },
+  { id = "check-yaml" },
+  { id = "debug-statements" },
+  { id = "detect-private-key" },
+  { id = "end-of-file-fixer" },
+  { id = "mixed-line-ending", args = ["--fix=lf"] },
+  { id = "name-tests-test", args = ["--django"], exclude = '^tests/(settings|urls)\.py$' },
+  { id = "no-commit-to-branch" },
+  { id = "trailing-whitespace" },
+]
+
+[[repos]]
+repo = "https://github.com/asottile/pyupgrade"
+rev = "v3.21.2"
+hooks = [
+  { id = "pyupgrade", args = ["--py312-plus"] },
+]
+
+[[repos]]
+repo = "https://github.com/adamchainz/django-upgrade"
+rev = "1.31.1"
+hooks = [
+  { id = "django-upgrade", args = ["--target-version", "5.2"] },
+]
+
+[[repos]]
+repo = "https://github.com/astral-sh/ruff-pre-commit"
+rev = "v0.15.20"
+hooks = [
+  { id = "ruff", args = ["--fix", "--exit-non-zero-on-fix"] },
+  { id = "ruff-format", args = ["--check"] },
+]
+
+[[repos]]
+repo = "https://github.com/codespell-project/codespell"
+rev = "v2.4.2"
+
+[[repos.hooks]]
+id = "codespell"
+args = ["-I", ".codespellignore"]
+exclude = '\.(css\.map|json|js\.map|lock|min\.css\.map|min\.js|po|pyc)$|shCore.js'
+
+[[repos]]
+repo = "https://github.com/astral-sh/uv-pre-commit"
+rev = "0.11.25"
+hooks = [
+  { id = "uv-lock" },
+]
