@@ -29,6 +29,7 @@ from psycopg2.extensions import (
     STATUS_READY,
 )
 
+from django_diagnostic import __version__
 from django_diagnostic.decorators import Diagnostic
 
 # GitPython is an optional extra (`django-diagnostic[git]`) -- the whole module
@@ -125,6 +126,7 @@ class IndexView(SuperuserRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
+        context["django_diagnostic_version"] = __version__
         registry_dict = {}
 
         for registry_key, value in sorted(Diagnostic.registry.items()):
