@@ -21,8 +21,8 @@ version_files = [
     "django_diagnostic/__init__.py",
 ]
 version_scheme = "semver2"
-tag_format = "$version"
-legacy_tag_formats = ["v$version"]
+tag_format = "v$version"
+legacy_tag_formats = ["$version"]
 bump_message = "bump: version $current_version → $new_version"
 changelog_file = "docs/changelog.rst"
 update_changelog_on_bump = true
