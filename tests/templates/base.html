@@ -1,0 +1,14 @@
+<!--
+Minimal stand-in for the host application's own base.html (see
+django_diagnostic/templates/django_diagnostic/base.html for why the package
+itself deliberately doesn't ship one). Test-fixture only.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>{% block title %}{% endblock title %}</title>
+</head>
+<body>
+  {% block content %}{% endblock content %}
+</body>
+</html>

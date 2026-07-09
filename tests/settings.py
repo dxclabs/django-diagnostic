@@ -1,10 +1,12 @@
-# import django
+from pathlib import Path
 
 DEBUG = True
 USE_TZ = True
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "7JkxsUpTJsnZfcifb88MzqaHr0VhNYghdidV2fKSsbvS2P4Lmr"  # nosec
+BASE_DIR = Path(__file__).resolve().parent
+
+# Throwaway key for the test settings module only -- never used outside pytest.
+SECRET_KEY = "7JkxsUpTJsnZfcifb88MzqaHr0VhNYghdidV2fKSsbvS2P4Lmr"  # noqa: S105
 
 DATABASES = {
     "default": {
@@ -18,6 +20,7 @@ ROOT_URLCONF = "tests.urls"
 INSTALLED_APPS = [
     "django.contrib.auth",
     "django.contrib.contenttypes",
+    "django.contrib.sessions",
     "django.contrib.sites",
     "django_diagnostic",
 ]
@@ -25,3 +28,16 @@ INSTALLED_APPS = [
 SITE_ID = 1
 
 MIDDLEWARE = ()
+
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [BASE_DIR / "templates"],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.request",
+            ],
+        },
+    },
+]

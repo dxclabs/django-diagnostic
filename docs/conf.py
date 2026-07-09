@@ -10,19 +10,19 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import os
 import sys
+from pathlib import Path
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 # sys.path.insert(0, os.path.abspath('.'))
 
-cwd = os.getcwd()
-parent = os.path.dirname(cwd)
-sys.path.append(parent)
+cwd = Path.cwd()
+parent = cwd.parent
+sys.path.append(str(parent))
 
-import django_diagnostic
+import django_diagnostic  # noqa: E402 -- must follow the sys.path setup above
 
 # -- General configuration -----------------------------------------------------
 
@@ -47,7 +47,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "Django Diagnostic"
-copyright = "2019, Campbell McKilligan"
+copyright = "2019, Campbell McKilligan"  # noqa: A001 -- name mandated by Sphinx's conf.py contract
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -190,7 +190,13 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-    ("index", "django-diagnostic.tex", "Django Diagnostic Documentation", "Campbell McKilligan", "manual"),
+    (
+        "index",
+        "django-diagnostic.tex",
+        "Django Diagnostic Documentation",
+        "Campbell McKilligan",
+        "manual",
+    ),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -218,7 +224,15 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [("index", "django-diagnostic", "Django Diagnostic Documentation", ["Campbell McKilligan"], 1)]
+man_pages = [
+    (
+        "index",
+        "django-diagnostic",
+        "Django Diagnostic Documentation",
+        ["Campbell McKilligan"],
+        1,
+    ),
+]
 
 # If true, show URL addresses after external links.
 # man_show_urls = False

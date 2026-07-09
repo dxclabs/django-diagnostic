@@ -13,11 +13,11 @@ from django.test import TestCase
 
 
 class TestDjango_diagnostic(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         pass
 
-    def test_something(self):
+    def test_something(self) -> None:
         pass
 
-    def tearDown(self):
+    def tearDown(self) -> None:
         pass
