@@ -25,7 +25,7 @@ jobs:
 
       - name: Ruff Check
         if: steps.changed.outputs.files != ''
-        uses: astral-sh/ruff-action@v4.0.0
+        uses: astral-sh/ruff-action@v4.1.0
         with:
           src: ${{ steps.changed.outputs.files }}
           args: >
