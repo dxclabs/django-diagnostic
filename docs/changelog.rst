@@ -1,6 +1,19 @@
 CHANGELOG
 ###############
 
+v1.8.1 (2026-07-14)
+===================
+
+
+- build: bump Django to 6.0.7 and GitPython to 3.1.51, clear RHDA vulnerabilities (#44)
+- Django>=6.0.7,<7.0 (was <6.0), GitPython>=3.1.51 in the git extra (was
+>=3.1.27) - clears the flagged RHDA vulnerabilities in both. Test suite
+(6 tests) passes against Django 6.0.7.
+- Also: prek autoupdate (ruff-pre-commit v0.15.20 -> v0.15.21, uv-pre-commit
+0.11.25 -> 0.11.28), and bump astral-sh/ruff-action v4.0.0 -> v4.1.0 in
+ruff.yaml to match open Dependabot PR #43.
+- Co-authored-by: Claude Sonnet 5 <noreply@anthropic.com>
+
 v1.8.0 (2026-07-09)
 ===================
 
