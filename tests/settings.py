@@ -1,3 +1,4 @@
+import secrets
 from pathlib import Path
 
 DEBUG = True
@@ -5,8 +6,8 @@ USE_TZ = True
 
 BASE_DIR = Path(__file__).resolve().parent
 
-# Throwaway key for the test settings module only -- never used outside pytest.
-SECRET_KEY = "7JkxsUpTJsnZfcifb88MzqaHr0VhNYghdidV2fKSsbvS2P4Lmr"  # noqa: S105
+# A fresh key per test run: nothing in the tests depends on its value.
+SECRET_KEY = secrets.token_urlsafe(50)
 
 DATABASES = {
     "default": {
