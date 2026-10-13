@@ -1,6 +1,36 @@
 CHANGELOG
 ###############
 
+v1.8.2 (2026-10-13)
+===================
+
+
+- build: refresh tooling to match the Flask sites, clear Dependabot alerts (#47)
+- * build: refresh tooling to match the Flask sites, clear Dependabot alerts
+- - prek: built-in hooks, default_stages, commitizen commit-msg hook, current
+  hook versions (django-upgrade targets 6.0, the package's Django floor)
+- commitizen: version_provider uv, so a bump also updates uv.lock
+- CI: setup-uv v10.3.0 with UV_NO_SYNC, setup-python v7 in bump; tests no
+  longer hide failures behind `|| true`
+- Dependabot: uv ecosystem, version-update PRs off
+- uv lock --upgrade (GitPython 3.2.0, sqlparse 0.6.0, Django 6.1.2) and the
+  git extra's floor raised to GitPython>=3.1.59 for host apps
+- docs/development: commitizen, prek and uv notes
+- Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_016QkCyji4vsNQE8ZCV4YwPB
+- * docs: replace the 2019 cookiecutter docs
+- README, installation, usage and CONTRIBUTING described PyPI/easy_install,
+url(), flake8, tox, Travis and Python 2.6. They now cover installing from a
+git tag with the git/celery_results extras, INSTALLED_APPS and URLs, the
+built-in reports and the settings they read, registering host-app reports,
+and the uv/prek/commitizen workflow. The empty HISTORY.rst is replaced by the
+commitizen changelog in the Sphinx toctree, and the one-line README.md is
+dropped in favour of README.rst.
+- Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_016QkCyji4vsNQE8ZCV4YwPB
+- ---------
+- Co-authored-by: Claude Opus 5.5 <noreply@anthropic.com>
+
 v1.8.1 (2026-07-14)
 ===================
 
