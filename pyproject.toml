@@ -12,7 +12,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-git = ["GitPython>=3.1.51"]
+git = ["GitPython>=3.1.59"]
 celery_results = ["django-celery-results>=2.6.0"]
 
 [tool.commitizen]
@@ -26,7 +26,7 @@ legacy_tag_formats = ["$version"]
 bump_message = "bump: version $current_version → $new_version"
 changelog_file = "docs/changelog.rst"
 update_changelog_on_bump = true
-version_provider = "pep621"
+version_provider = "uv"
 
 [tool.commitizen.customize]
 bump_pattern = "^(feat|fix|perf|refactor|build|BREAKING CHANGE)"

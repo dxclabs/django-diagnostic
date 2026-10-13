@@ -8,26 +8,28 @@ on:
 jobs:
   pytests:
 
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     timeout-minutes: 5
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        python-version: ["3.12"]
+    env:
+      # Use the environment `uv sync` built; `uv run` would otherwise re-sync the default groups
+      UV_NO_SYNC: "1"
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
 
-      - uses: astral-sh/setup-uv@v7
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.3.0
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.12"
 
       - name: Install dependencies
-        run: uv sync --frozen --group tests
+        run: uv sync --frozen --no-dev --group tests
 
+      # No `|| true`: it hid real failures
       - name: Run tests in tests/
-        run: uv run pytest tests/ || true
+        run: uv run pytest tests/
 
+      # pytest exits 5 when it collects nothing (there are no doctests yet)
       - name: Run tests embedded in docstrings
-        run: uv run pytest --doctest-modules django_diagnostic/ || true
+        run: uv run pytest --doctest-modules django_diagnostic/ || [ $? -eq 5 ]

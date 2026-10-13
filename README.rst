@@ -1,76 +1,47 @@
-=============================
+=================
 Django Diagnostic
-=============================
+=================
 
-.. image:: https://badge.fury.io/py/django-diagnostic.svg
-    :target: https://badge.fury.io/py/django-diagnostic
-
-.. image:: https://travis-ci.org/campbellmc/django-diagnostic.svg?branch=master
-    :target: https://travis-ci.org/campbellmc/django-diagnostic
-
-.. image:: https://codecov.io/gh/campbellmc/django-diagnostic/branch/master/graph/badge.svg
-    :target: https://codecov.io/gh/campbellmc/django-diagnostic
-
-provides basic diagnostic pages for django application
-
-Documentation
--------------
-
-The full documentation is at https://django-diagnostic.readthedocs.io.
+Diagnostic pages for a Django application: settings, environment, database, sessions,
+the running code's git revision and more, all behind a superuser login. Host apps can
+register their own reports alongside the built-in ones.
 
 Quickstart
 ----------
 
-Install Django Diagnostic::
+Add it to the host app's dependencies, pinned to a release tag (it isn't on PyPI):
 
-    pip install django-diagnostic
+.. code-block:: toml
 
-Add it to your `INSTALLED_APPS`:
+    dependencies = [
+        "django-diagnostic[git,celery_results] @ git+https://github.com/dxclabs/django-diagnostic.git@v1.8.1",
+    ]
 
-.. code-block:: python
-
-    INSTALLED_APPS = (
-        ...
-        'django_diagnostic.apps.DjangoDiagnosticConfig',
-        ...
-    )
-
-Add Django Diagnostic's URL patterns:
+Add it to ``INSTALLED_APPS``:
 
 .. code-block:: python
 
-    from django_diagnostic import urls as django_diagnostic_urls
+    INSTALLED_APPS = [
+        ...
+        "django_diagnostic",
+    ]
 
+Include its URLs:
+
+.. code-block:: python
+
+    from django.urls import include, path
 
     urlpatterns = [
         ...
-        url(r'^', include(django_diagnostic_urls)),
-        ...
+        path("diagnostic/", include("django_diagnostic.urls")),
     ]
 
-Features
---------
+``/diagnostic/`` then lists every registered report. See ``docs/installation.rst`` and
+``docs/usage.rst`` for the extras, the settings some reports need, and how to register
+your own.
 
-* TODO
+Development
+-----------
 
-Running Tests
--------------
-
-Does the code actually work?
-
-::
-
-    source <YOURVIRTUALENV>/bin/activate
-    (myenv) $ pip install tox
-    (myenv) $ tox
-
-Credits
--------
-
-Tools used in rendering this package:
-
-*  Cookiecutter_
-*  `cookiecutter-djangopackage`_
-
-.. _Cookiecutter: https://github.com/audreyr/cookiecutter
-.. _`cookiecutter-djangopackage`: https://github.com/pydanny/cookiecutter-djangopackage
+See ``CONTRIBUTING.rst`` and ``docs/development/``.
