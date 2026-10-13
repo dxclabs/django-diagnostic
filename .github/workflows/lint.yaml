@@ -8,20 +8,20 @@ on:
 jobs:
   lint_python:
 
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     timeout-minutes: 5
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        python-version: ["3.12"]
+    env:
+      # Use the environment `uv sync` built; `uv run` would otherwise re-sync the default groups
+      UV_NO_SYNC: "1"
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
 
-      - uses: astral-sh/setup-uv@v7
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.3.0
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.12"
 
       - name: Install dependencies
         run: uv sync --frozen --only-group linters
